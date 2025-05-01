@@ -1,0 +1,389 @@
+{
+  "absence": [
+    {
+      "id_absence": "1",
+      "date": "2025-03-10",
+      "id_etudiant": "1",
+      "id_cours": "2",
+      "id": "4ada"
+    },
+    {
+      "id_absence": "2",
+      "date": "2025-03-11",
+      "id_etudiant": "1",
+      "id_cours": "2",
+      "id": "6dd1"
+    },
+    {
+      "id": "c382",
+      "id_absence": "3",
+      "date": "2025-03-10",
+      "id_etudiant": "2",
+      "id_cours": "2"
+    },
+    {
+      "id": "48dc",
+      "id_absence": "4",
+      "date": "2025-04-16",
+      "id_etudiant": "2",
+      "id_cours": "3"
+    },
+    {
+      "id": "ff60",
+      "id_absence": "5",
+      "date": "2025-04-16",
+      "id_etudiant": "2",
+      "id_cours": "2"
+    }
+  ],
+  "classe": [
+    {
+      "id_classe": "1",
+      "libelle": "Master 2 Dev",
+      "filiere": "Dev/mobile",
+      "niveau": "Master 2",
+      "id": "3866"
+    },
+    {
+      "id_classe": "2",
+      "libelle": "L1 Marketing",
+      "filiere": "Marketing",
+      "niveau": "Licence 1",
+      "id": "8afd"
+    },
+    {
+      "id": "fce8",
+      "id_classe": "3",
+      "libelle": "L3 Marketing",
+      "filiere": "Marketing digital",
+      "niveau": "Licence 3"
+    },
+    {
+      "id": "ac29",
+      "id_classe": "4",
+      "libelle": "Master 1 Design",
+      "filiere": "Design",
+      "niveau": "Master 1"
+    },
+    {
+      "id": "5d64",
+      "id_classe": "5",
+      "libelle": "L2 Dev",
+      "filiere": "dev",
+      "niveau": "Licence 2",
+      "archive": false
+    }
+  ],
+  "cours": [
+    {
+      "id_cours": "1",
+      "date": "2025-05-10",
+      "heure_debut": "08:00:00",
+      "heure_fin": "10:00:00",
+      "nombre_heures": "2",
+      "semestre": "Semestre 2",
+      "id_professeur": "1",
+      "id_module": "1",
+      "id": "b811"
+    },
+    {
+      "id_cours": "2",
+      "date": "2025-06-11",
+      "heure_debut": "10:00:00",
+      "heure_fin": "20:00:00",
+      "nombre_heures": "2",
+      "semestre": "Semestre 1",
+      "id_professeur": "1",
+      "id_module": "2",
+      "id": "91c6"
+    },
+    {
+      "id_cours": "3",
+      "date": "2025-08-12",
+      "heure_debut": "14:00:00",
+      "heure_fin": "16:00:00",
+      "nombre_heures": "2",
+      "semestre": "Semestre 2",
+      "id_professeur": "2",
+      "id_module": "3",
+      "id": "7ef8"
+    },
+    {
+      "id": "0b7e",
+      "id_cours": "4",
+      "date": "2025-04-18",
+      "heure_debut": "17:02:00",
+      "heure_fin": "18:02:00",
+      "nombre_heures": "1",
+      "semestre": "semestre 1",
+      "id_professeur": "3",
+      "id_module": "1"
+    },
+    {
+      "id": "0fc4",
+      "id_cours": "5",
+      "date": "2025-04-18",
+      "heure_debut": "14:29:00",
+      "heure_fin": "15:29:00",
+      "nombre_heures": "1",
+      "semestre": "semestre 1",
+      "id_professeur": "2",
+      "id_module": "2"
+    }
+  ],
+  "cours_classe": [
+    {
+      "id": "3",
+      "id_cours": "4",
+      "id_classe": "2"
+    },
+    {
+      "id": "4",
+      "id_cours": "5",
+      "id_classe": "2"
+    },
+    {
+      "id": "5",
+      "id_cours": "1",
+      "id_classe": "1"
+    },
+    {
+      "id": "6",
+      "id_cours": "2",
+      "id_classe": "2"
+    },
+    {
+      "id": "10",
+      "id_cours": "3",
+      "id_classe": "1"
+    }
+  ],
+  "etudiant": [
+    {
+      "id_etudiant": "1",
+      "id_utilisateur": "4",
+      "matricule": "ETU001",
+      "adresse": "12 rue des Lilas",
+      "id": "61f9"
+    },
+    {
+      "id_etudiant": "2",
+      "id_utilisateur": "7",
+      "matricule": "ETU002",
+      "adresse": "13 rue des Lilas",
+      "id": "59ae"
+    }
+  ],
+  "inscription": [
+    {
+      "id_inscription": "1",
+      "id_etudiant": "1",
+      "id_classe": "1",
+      "annee_scolaire": "2025",
+      "id": "2919"
+    },
+    {
+      "id_inscription": "2",
+      "id_etudiant": "2",
+      "id_classe": "2",
+      "annee_scolaire": "2025",
+      "id": "5574"
+    }
+  ],
+  "justification": [
+    {
+      "id_justification": "1",
+      "id_absence": "1",
+      "date": "2025-03-11",
+      "motif": "Maladie",
+      "etat": "acceptée",
+      "id": "b383"
+    },
+    {
+     "id_justification": "2",
+      "id_absence": "2",
+      "date": "2025-04-16",
+      "motif": "empechement",
+      "etat": "attente",
+      "id": "6523"
+    }
+  ],
+  "module": [
+    {
+      "id_module": "1",
+      "libelle": "Bases de données",
+      "id": "e9aa"
+    },
+    {
+      "id_module": "2",
+      "libelle": "Dév Web",
+      "id": "bce0"
+    },
+    {
+      "id_module": "3",
+      "libelle": "Maquettage",
+      "id": "4394"
+    }
+  ],
+  "professeur": [
+    {
+      "id_professeur": "1",
+      "id_utilisateur": "3",
+      "specialite": "Programmation",
+      "grade": "Maître de Conférences",
+      "archive": false,
+      "id": "e500"
+    },
+    {
+      "id_professeur": "2",
+      "id_utilisateur": "5",
+      "specialite": "Réseaux",
+      "grade": "Professeur",
+      "archive": false,
+      "id": "60fb"
+    },
+    {
+      "id": "3839",
+      "id_professeur": "3",
+      "id_utilisateur": "8",
+      "specialite": "informatique",
+      "grade": "grade 2",
+      "archive": false
+    },
+    {
+      "id": "45da",
+      "id_professeur": "4",
+      "id_utilisateur": "9",
+      "specialite": "Design",
+      "grade": "grade 5",
+      "archive": false
+    },
+    {
+      "id": "27c3",
+      "id_professeur": "5",
+      "id_utilisateur": "10",
+      "specialite": "informatique",
+      "grade": "grade 2",
+      "archive": true
+    }
+  ],
+  "professeur_classe": [
+    {
+      "id_professeur": "2",
+      "id_classe": "2",
+      "id": "67c0"
+    },
+    {
+      "id": "b83c",
+      "id_professeur": "3",
+      "id_classe": "1"
+    },
+    {
+      "id": "aeb3",
+      "id_professeur": "4",
+      "id_classe": "1"
+    },
+    {
+      "id": "3bb8",
+      "id_professeur": "5",
+      "id_classe": "2"
+    },
+    {
+      "id": "f98d",
+      "id_professeur": "1",
+      "id_classe": "1"
+    }
+  ],
+  "utilisateur": [
+    {
+      "id_utilisateur": "1",
+      "nom": "Niang",
+      "prenom": "Responsable",
+      "email": "rp@ecole221.com",
+      "mot_de_passe": "rp@123",
+      "role": "RP",
+      "id": "aa0a"
+    },
+    {
+      "id_utilisateur": "2",
+      "nom": "Diop",
+      "prenom": "Attache",
+      "email": "attache@ecole221.com",
+      "mot_de_passe": "att@123",
+      "role": "RP",
+      "id": "41d1"
+    },
+    {
+      "id_utilisateur": "3",
+      "nom": "Ndiaye",
+      "prenom": "Mansour",
+      "email": "mansour@ecole221.com",
+      "mot_de_passe": "mdp123",
+      "role": "Professeur",
+      "id": "c908"
+    },
+    {
+      "id_utilisateur": "4",
+      "nom": "Thiam",
+      "prenom": "Ibrahima",
+      "email": "ibrahime@ecole221.com",
+      "mot_de_passe": "mdp123",
+      "role": "Étudiant",
+      "id": "fb7f"
+    },
+    {
+      "id_utilisateur": "5",
+      "nom": "Fall",
+      "prenom": "David",
+      "email": "david@ecole221.com",
+      "mot_de_passe": "mdp123",
+      "role": "Professeur",
+      "id": "0d52"
+    },
+    {
+      "id_utilisateur": "6",
+      "nom": "Diallo",
+      "prenom": "Claire",
+      "email": "claire@ecole221.com",
+      "mot_de_passe": "mdp123",
+      "role": "Attaché",
+      "id": "e1e0"
+    },
+    {
+      "id_utilisateur": "7",
+      "nom": "Sow",
+      "prenom": "Samba",
+      "email": "samba@ecole221.com",
+      "mot_de_passe": "mdp123",
+      "role": "Étudiant",
+      "id": "029b"
+    },
+    {
+      "id": "6221",
+      "id_utilisateur": "8",
+      "nom": "Diop",
+      "prenom": "Soukeyna",
+      "email": "soukey@gmail.com",
+      "role": "Professeur",
+      "mot_de_passe": "VpJc65lH"
+    },
+    {
+      "id": "7683",
+      "id_utilisateur": "9",
+      "nom": "Niang",
+      "prenom": "Fatimata Binta",
+      "email": "diop11@gmail.com",
+      "role": "Professeur",
+      "mot_de_passe": "mrr5Ec3i"
+    },
+    {
+      "id": "e605",
+      "id_utilisateur": "10",
+      "nom": "Diallo",
+      "prenom": "Diarra",
+      "email": "1234000@gmail.com",
+      "role": "Professeur",
+      "mot_de_passe": "wlxUyRF4"
+    }
+  ]
+}

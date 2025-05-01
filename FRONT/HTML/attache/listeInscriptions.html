@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#7C3AED',
+                        secondary: '#F59E0B',
+                        accent: '#EC4899',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex h-screen -mt-20">
+        <div id="sidebaratt" class=""></div>
+
+        <div class="flex-1">
+            <div id="navbar"></div>
+
+            <!-- Main Content -->
+            <main class="flex-1 space-y-8 p-6 w-[100%]">
+                <!-- Contenu Principal -->
+                <div class="flex-1 p-6 md:p-8 rounded-2xl bg-white shadow-xl">
+
+                    <!-- En-tête avec titre et boutons -->
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                        <div>
+                            <h2
+                                class="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                                Emploi du temps</h2>
+                            <p class="text-gray-500 mt-1">Liste des Etudiants inscrit</p>
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <div class="flex space-x-3">
+                                <!-- Formulaire de filtrage -->
+                                <div class="flex items-center">
+                                    <select id="classe-filter"
+                                        class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                        <option value="">Toutes les classes</option>
+                                        <!-- Les options seront ajoutées dynamiquement -->
+                                    </select>
+                                </div>
+
+                                <a href="#" id="add-new-btn"
+                                    class="flex items-center px-4 py-2.5 rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-primary to-accent hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+                                    <i class="fas fa-plus mr-2"></i> Nouveau
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Liste des cours en cartes premium -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="inscriptions-container">
+                        <!-- Le contenu sera chargé dynamiquement ici -->
+                        <div class="col-span-full py-16 text-center animate-pulse">
+                            <div
+                                class="mx-auto w-28 h-28 rounded-full bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center mb-6 shadow-inner">
+                                <i class="fas fa-calendar-alt text-4xl text-gray-300"></i>
+                            </div>
+                            <h3 class="text-xl font-medium text-gray-700">Chargement des étudiants...</h3>
+                            <p class="text-gray-400 mt-2">les inscrits apparaîtront ici</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+
+    <!-- Modal d'ajout d'inscription -->
+    <div id="addInscriptionModal"
+        class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <h3 class="text-lg leading-6 font-medium text-primary">Nouvelle Inscription</h3>
+
+                <form id="addInscriptionForm" class="mt-4 space-y-4">
+                    <div>
+                        <label for="studentNom" class="block text-sm font-medium text-gray-700 text-left">Nom*</label>
+                        <input type="text" id="studentNom"
+                            class="mt-1 p-2 w-full border rounded-md focus:ring-2 focus:ring-purple-500">
+                        <p id="studentNomError" class="text-red-500 text-xs mt-1 hidden">Le nom est obligatoire</p>
+                    </div>
+
+                    <div>
+                        <label for="studentPrenom"
+                            class="block text-sm font-medium text-gray-700 text-left">Prénom*</label>
+                        <input type="text" id="studentPrenom"
+                            class="mt-1 p-2 w-full border rounded-md focus:ring-2 focus:ring-purple-500">
+                        <p id="studentPrenomError" class="text-red-500 text-xs mt-1 hidden">Le prénom est obligatoire
+                        </p>
+                    </div>
+
+                    <div>
+                        <label for="studentEmail"
+                            class="block text-sm font-medium text-gray-700 text-left">Email*</label>
+                        <input type="email" id="studentEmail"
+                            class="mt-1 p-2 w-full border rounded-md focus:ring-2 focus:ring-purple-500">
+                        <p id="studentEmailError" class="text-red-500 text-xs mt-1 hidden">L'email est obligatoire et
+                            doit être valide</p>
+                    </div>
+
+                    <div>
+                        <label for="studentAdresse"
+                            class="block text-sm font-medium text-gray-700 text-left">Adresse</label>
+                        <input type="text" id="studentAdresse"
+                            class="mt-1 p-2 w-full border rounded-md focus:ring-2 focus:ring-purple-500">
+                        <p id="studentAdresseError" class="text-red-500 text-xs mt-1 hidden">L'adresse est obligatoire
+                            et doit être valide</p>
+
+                    </div>
+
+                    <div>
+                        <label for="studentClasse"
+                            class="block text-sm font-medium text-gray-700 text-left">Classe*</label>
+                        <select id="studentClasse"
+                            class="mt-1 p-2 w-full border rounded-md focus:ring-2 focus:ring-purple-500">
+                            <!-- Les options seront ajoutées dynamiquement -->
+                        </select>
+                        <p id="studentClasseError" class="text-red-500 text-xs mt-1 hidden">La classe est obligatoire
+                        </p>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" id="cancelAddInscription"
+                            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+                            Annuler
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 bg-gradient-to-r from-primary to-accent">
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="../../JS/attache/listeInscriptions.js"></script>
+    <script src="../composant/sidebar/sidebaratt.js"></script>
+    <script src="../composant/navbar/navbar.js"></script>
+    <script src="../../JS/auth/deconnexion.js"></script>
+</body>
+
+</html>

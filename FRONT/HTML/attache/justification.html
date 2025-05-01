@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Justifications</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C3AED",
+                        secondary: "#F59E0B",
+                        accent: "#EC4899",
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex h-screen -mt-20">
+        <div id="sidebaratt" class=""></div>
+
+        <!-- Contenu Principal -->
+        <div class="flex-1">
+            <div id="navbar"></div>
+
+         <main class="flex-1 space-y-8 p-6 w-full">
+                        <!-- En-tête avec titre et boutons -->
+
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">Liste des justifications</h2>
+                    <p class="text-gray-500 mt-1">Historique des justifications soumises</p>
+                </div>
+                
+                <!-- Filtre -->
+                <div class="flex space-x-3">
+                    <form method="get" action="#" class="flex items-center">
+                        <select name="filter" id="filter-select" class="px-4 py-2.5 border border-gray-200 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all duration-300">
+                            <option value="">Toutes les justifications</option>
+                            <option value="attente">En attente</option>
+                            <option value="acceptee">Acceptées</option>
+                            <option value="refusee">Refusées</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Liste des justifications en cartes premium -->
+            <div id="justifications-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <!-- Le contenu sera généré par JavaScript -->
+                <div class="col-span-full py-16 text-center animate-pulse">
+                    <div class="mx-auto w-28 h-28 rounded-full bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center mb-6 shadow-inner">
+                        <i class="fas fa-file-signature text-4xl text-gray-300"></i>
+                    </div>
+                    <h3 class="text-xl font-medium text-gray-700">Chargement des justifications...</h3>
+                    <p class="text-gray-400 mt-2">Veuillez patienter</p>
+                </div>
+            </div>
+         </div>
+        </main>
+    </div>
+
+   <script src="../../JS/attache/justification.js"></script>
+   <script src="../composant/sidebar/sidebaratt.js"></script>
+   <script src="../composant/navbar/navbar.js"></script>
+   <script src="../../JS/auth/deconnexion.js"></script>
+</body>
+</html>

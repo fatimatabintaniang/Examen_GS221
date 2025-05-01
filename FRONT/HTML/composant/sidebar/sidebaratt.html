@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#7C3AED',
+                        secondary: '#F59E0B',
+                        accent: '#EC4899',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 ">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-full bg-gradient-to-b from-accent to-accent-dark text-white flex flex-col p-5 rounded-r-xl shadow-xl border-r border-gray-200">
+            <div class="flex items-center justify-center mb-10">
+                <div class="bg-white text-primary text-2xl font-bold rounded-xl w-14 h-14 flex items-center justify-center shadow-md hover:scale-105 transition-transform duration-300">
+                    GS
+                </div>
+            </div>
+
+            <nav class="mt-8 flex-1 space-y-2">
+                <a href="dashboardatt.html" class="flex items-center text-sm py-3 px-4 rounded-lg hover:bg-white/20 transition-all duration-300 group">
+                    <span class="mr-3 text-lg group-hover:text-secondary"><i class="ri-dashboard-fill"></i></span>
+                    <span class="font-medium group-hover:translate-x-1 transition-transform duration-300">Dashboard</span>
+                </a>
+
+                <a href="./listeInscriptions.html" class="flex items-center text-sm py-3 px-4 rounded-lg hover:bg-white/20 transition-all duration-300 group">
+                    <span class="mr-3 text-lg group-hover:text-secondary"><i class="ri-list-view"></i></span>
+                    <span class="font-medium group-hover:translate-x-1 transition-transform duration-300">Liste des inscriptions</span>
+                </a>
+
+                <a href="./listeAbsence.html" class="flex items-center text-sm py-3 px-4 rounded-lg hover:bg-white/20 transition-all duration-300 group">
+                    <span class="mr-3 text-lg group-hover:text-secondary"><i class="ri-list-view"></i></span>
+                    <span class="font-medium group-hover:translate-x-1 transition-transform duration-300">liste absences</span>
+                </a>
+
+                <a href="./justification.html" class="flex items-center text-sm py-3 px-4 rounded-lg hover:bg-white/20 transition-all duration-300 group">
+                    <span class="mr-3 text-lg group-hover:text-secondary"><i class="ri-list-view"></i></span>
+                    <span class="font-medium group-hover:translate-x-1 transition-transform duration-300">liste justification</span>
+                </a>
+            </nav>
+
+            <button id="logoutBtn" class="mt-auto bg-white text-primary font-bold py-2.5 px-4 rounded-lg w-full text-center shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 flex items-center justify-center">
+                <span class="mr-2"><i class="ri-logout-box-r-line"></i></span> Déconnexion
+            </button>
+        </aside>
+        <script src="./sidebaratt.js"></script>
+    </body>
+    </html>
