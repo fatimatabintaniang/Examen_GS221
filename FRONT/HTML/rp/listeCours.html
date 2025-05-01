@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#7C3AED',
+                        secondary: '#F59E0B',
+                        accent: '#EC4899',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Animation pour le modal */
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #cancelConfirmModal[data-show="true"] {
+            display: flex;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        #cancelConfirmModal .modal-content {
+            animation: modalFadeIn 0.3s ease-out;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex h-screen -mt-20">
+        <div id="sidebar" class=""></div>
+
+        <div class="flex-1">
+            <div id="navbar"></div>
+
+
+            <!-- Modal d'ajout de cours -->
+            <div id="addCourseModal"
+                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                <div class="bg-white rounded-lg p-6 w-[50%]">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-primary ">Ajouter un Cours</h3>
+                        <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <form id="addCourseForm" class="space-y-4">
+
+                        <div class="grid grid-cols-2 gap-4">
+
+                            <!--- Date -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Date</label>
+                                <input type="date" id="newCourseDate"
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <div id="newCourseDate-error" class="text-red-500 text-xs mt-1"></div>
+                            </div>
+
+                            <!--- Heures Debut -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Heure Début</label>
+                                <input type="time" id="newCourseStartTime"
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <div id="newCourseStartTime-error" class="text-red-500 text-xs mt-1"></div>
+                            </div>
+                        </div>
+
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <!--- Heures fin -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Heure Fin</label>
+                                <input type="time" id="newCourseEndTime"
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <div id="newCourseEndTime-error" class="text-red-500 text-xs mt-1"></div>
+                            </div>
+
+                            <!--- Nombre d'heures -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Nombre d'heures</label>
+                                <input type="number" id="newCourseHours"
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <div id="newCourseHours-error" class="text-red-500 text-xs mt-1"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Ligne 3 - Semestre -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Semestre</label>
+                                <input type="text" id="newCourseSemester"
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <div id="newCourseSemester-error" class="text-red-500 text-xs mt-1"></div>
+                            </div>
+
+                            <!--- Professeur -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Professeur</label>
+                                <select id="newCourseProfessor"
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                    <option value="">Sélectionnez un professeur</option>
+
+                                </select>
+                                <div id="newCourseProfessor-error" class="text-red-500 text-xs mt-1"></div>
+                            </div>
+                        </div>
+                        <!-- Ligne 4 - Module -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Module</label>
+                            <select id="newCourseModule"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <option value="">Sélectionnez un module</option>
+                                <!-- Options ajoutées dynamiquement -->
+                            </select>
+                            <div id="newCourseModule-error" class="text-red-500 text-xs mt-1"></div>
+                        </div>
+                        <!-- - Classes -->
+                        <div class=" ">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Affecter aux classes :</label>
+                            <div class="grid grid-cols-2 gap-2  grid grid-cols-5 border border-gray-200 p-2 rounded"
+                                id="classesCheckboxContainer">
+                                <!-- Cases à cocher ajoutées dynamiquement -->
+                            </div>
+                            <div id="classesCheckboxContainer-error" class="text-red-500 text-xs mt-1"></div>
+                        </div>
+
+                        <!-- Boutons -->
+                        <div class="flex justify-end space-x-3 pt-4">
+                            <button type="button" id="cancelAddCourseBtn"
+                                class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300">
+                                Annuler
+                            </button>
+                            <button type="submit"
+                                class="bg-primary text-white px-4 py-2 rounded-md hover:bg-purple-700">
+                                Ajouter
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!--  modal de modification -->
+            <div id="editCourseModal"
+                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                <div class="bg-white rounded-lg p-6 w-[50%]">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-primary">Modifier le Cours</h3>
+                        <button id="closeEditModalBtn" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <form id="editCourseForm" class="space-y-4">
+                        <input type="hidden" id="editCourseId">
+
+                        <!-- Conteneur pour les erreurs générales -->
+                        <div id="editFormGeneralError" class="text-red-500 text-sm"></div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Date</label>
+                                <input type="date" id="editCourseDate" required
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <div id="editCourseDate-error" class="text-red-500 text-xs mt-1"></div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Heure Début</label>
+                                <input type="time" id="editCourseStartTime" required
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <div id="editCourseStartTime-error" class="text-red-500 text-xs mt-1"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Heure Fin</label>
+                                <input type="time" id="editCourseEndTime" required
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <div id="editCourseEndTime-error" class="text-red-500 text-xs mt-1"></div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Nombre d'heures</label>
+                                <input type="number" id="editCourseHours" required
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <div id="editCourseHours-error" class="text-red-500 text-xs mt-1"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Semestre</label>
+                                <input type="text" id="editCourseSemester" required
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <div id="editCourseSemester-error" class="text-red-500 text-xs mt-1"></div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Professeur</label>
+                                <select id="editCourseProfessor" required
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                    <option value="">Sélectionnez un professeur</option>
+                                </select>
+                                <div id="editCourseProfessor-error" class="text-red-500 text-xs mt-1"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Module</label>
+                            <select id="editCourseModule" required
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <option value="">Sélectionnez un module</option>
+                            </select>
+                            <div id="editCourseModule-error" class="text-red-500 text-xs mt-1"></div>
+                        </div>
+
+                        <div class="">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Affecter aux classes :</label>
+                            <div class="grid grid-cols-5 gap-2 border border-gray-200 p-2 rounded"
+                                id="editClassesCheckboxContainer">
+                                <!-- Cases à cocher ajoutées dynamiquement -->
+                            </div>
+                            <div id="editClassesCheckboxContainer-error" class="text-red-500 text-xs mt-1"></div>
+                        </div>
+
+                        <div class="flex justify-end space-x-3 pt-4">
+                            <button type="button" id="cancelEditCourseBtn"
+                                class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300">
+                                Annuler
+                            </button>
+                            <button type="submit"
+                                class="bg-primary text-white px-4 py-2 rounded-md hover:bg-purple-700">
+                                Enregistrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal de confirmation d'annulation -->
+            <div id="cancelConfirmModal"
+                class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
+                <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl transform transition-all">
+                    <div class="text-center">
+                        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                        </div>
+                        <h3 class="mt-3 text-lg font-medium text-gray-900" id="cancelModalTitle">Confirmer l'annulation
+                        </h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500" id="cancelModalMessage">Êtes-vous sûr de vouloir annuler ce
+                                cours ? Cette action est irréversible.</p>
+                        </div>
+                    </div>
+                    <div class="mt-5 flex justify-center space-x-4">
+                        <button type="button" id="cancelModalCancelBtn"
+                            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                            Non, annuler
+                        </button>
+                        <button type="button" id="cancelModalConfirmBtn"
+                            class="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            Oui, annuler le cours
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Modal pour afficher les classes -->
+            <div id="viewClassesModal"
+                class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black bg-opacity-50">
+                <div class="bg-white rounded-xl shadow-xl w-[50%] max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <!-- En-tête -->
+                    <div class="sticky top-0 bg-white p-6  flex justify-between items-start">
+                        <div>
+                            <h3 id="viewClassesModalTitle" class="text-xl font-bold text-gray-800"></h3>
+                            <p id="viewClassesModalSubtitle" class="text-sm text-gray-500 mt-1"></p>
+                        </div>
+                        <button onclick="closeViewClassesModal()" class="text-gray-400 hover:text-gray-500">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <!-- Contenu - Cartes des classes -->
+                    <div id="classesCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+                        <!-- Les cartes seront générées ici dynamiquement -->
+                    </div>
+
+                    <!-- Pied de page -->
+                    <div class="sticky bottom-0 bg-white p-4  flex justify-end">
+                        <button onclick="closeViewClassesModal()"
+                            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors">
+                            Fermer
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <main class="flex-1 space-y-8 p-6  ">
+                <!-- Contenu Principal -->
+                <div class="flex-1 p-6 md:p-8 rounded-2xl bg-white shadow-xl overflow-y-auto h-[68vh] ">
+
+                    <!-- En-tête avec titre et boutons - Fonctionnalités conservées -->
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                        <div>
+                            <h2
+                                class="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                                Liste des Cours</h2>
+                            <p class="text-gray-500 mt-1">Liste des cours</p>
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <!-- Barre de recherche et bouton -->
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="space-x-3 flex">
+                                    <div class="relative group">
+                                        <button
+                                            class="text-black shadow px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 transition-colors">filtrer</button>
+                                        <!-- Menu déroulant -->
+                                        <div
+                                            class="hidden group-hover:block absolute bg-white shadow-md rounded p-2 right-0 z-10 border border-gray-100">
+                                            <form id="filterForm" class="space-y-3 mb-4">
+                                                <select id="professeur_filtre" name="professeur_filtre"
+                                                    class="border p-2 rounded">
+                                                    <option value="">-- Tous les professeurs --</option>
+                                                    <!-- Les options seront ajoutées dynamiquement par JavaScript -->
+                                                </select>
+
+                                                <div class="grid grid-cols-2 gap-3">
+                                                    <input type="date" id="date_debut" name="date_debut"
+                                                        class="border p-2 rounded">
+                                                    <input type="date" id="date_fin" name="date_fin"
+                                                        class="border p-2 rounded">
+                                                </div>
+                                                <button type="button" id="applyFilter"
+                                                    class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                                                    Filtrer
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <button id="addCourseBtn"
+                                        class="bg-purple-600 text-white px-4 py-2 rounded bg-gradient-to-r from-primary to-accent">
+                                        Nouveau
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Liste des cours en cartes -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 gap-6" id="coursesContainer">
+                        <!-- Les cours seront ajoutés dynamiquement par JavaScript -->
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="../composant/sidebar/sidebar.js"></script>
+    <script src="../composant/navbar/navbar.js"></script>
+    <script src="../../JS/auth/deconnexion.js"></script>
+    <script src="../../JS/rp/listeCours.js"></script>
+
+</body>
+
+</html>
