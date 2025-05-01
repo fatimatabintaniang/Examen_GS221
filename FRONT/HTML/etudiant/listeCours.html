@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#7C3AED",
+            secondary: "#F59E0B",
+            accent: "#EC4899",
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    .animate-float {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-20px);
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100">
+  <div class="flex h-screen -mt-20">
+    <div id="sidebarEtudiant" class=""></div>
+
+    <div class="flex-1">
+      <div id="navbar"></div>
+
+      <main class="flex-1 space-y-8 p-6 w-full">
+        <div class="flex-1 p-6 md:p-8 rounded-2xl bg-white shadow-xl">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div>
+              <h2 class="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Emploi du temps</h2>
+              <p class="text-gray-500 mt-1">Vos prochains cours programmés</p>
+            </div>
+
+            <!-- Filtres -->
+            <div class="relative group">
+              <button class="text-black shadow px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 transition-colors">filtrer</button>
+              <div class="hidden group-hover:block absolute bg-white shadow-md rounded p-2 right-0 z-10 border border-gray-100">
+                <div class="flex space-x-3">
+                  <form id="filterForm" class="flex items-center space-x-2">
+                    <div class="relative">
+                      <input type="search" id="searchInput" placeholder="Filtrer par semestre (ex: S1, S2...)"
+                        class="border p-2 rounded pl-10 w-64 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                      <svg class="absolute left-3 top-3 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+
+                    <button type="submit"
+                      class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Rechercher</button>
+                    <button type="button" id="clearFilter"
+                      class="text-gray-600 hover:text-gray-800 flex items-center">
+                      <i class="fas fa-times-circle mr-1"></i> Effacer
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cartes de cours -->
+          <div id="coursContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <!-- Contenu généré dynamiquement par JS -->
+          </div>
+
+          <!-- Message Aucun cours -->
+          <div id="noCoursMessage" class="col-span-full py-16 text-center hidden animate-pulse">
+            <div class="mx-auto w-28 h-28 rounded-full bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center mb-6 shadow-inner">
+              <i class="fas fa-calendar-alt text-4xl text-gray-300"></i>
+            </div>
+            <h3 class="text-xl font-medium text-gray-700">Aucun cours programmé</h3>
+            <p class="text-gray-400 mt-2">Votre emploi du temps apparaîtra ici</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- JS composants -->
+  <script src="../composant/sidebar/sidebarEtudiant.js"></script>
+  <script src="../composant/navbar/navbar.js"></script>
+  <script src="../../JS/auth/deconnexion.js"></script>
+  <script src="../../JS/etudiant/listeCours.js"></script>
+</body>
+
+</html>
