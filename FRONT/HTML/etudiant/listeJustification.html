@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Justifications</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C3AED",
+                        secondary: "#F59E0B",
+                        accent: "#EC4899",
+                    },
+                },
+            },
+        };
+    </script>
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex h-screen -mt-20">
+        <div id="sidebarEtudiant" class=""></div>
+
+        <div class="flex-1">
+            <div id="navbar"></div>
+
+            <main class="flex-1 space-y-8 p-6 w-full">
+                <div class="flex-1 p-6 md:p-8 rounded-2xl bg-white shadow-xl">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                        <div>
+                            <h2 class="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                                Justifications d'absence
+                            </h2>
+                            <p class="text-gray-500 mt-1">Historique des justifications soumises</p>
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <button id="filterButton" class="flex items-center px-4 py-2.5 border border-gray-200 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                                <i class="fas fa-filter mr-2 text-primary"></i> Filtres
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="alertMessage" class="mb-6 p-4 rounded-lg hidden"></div>
+
+                    <div id="justificationsContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        <!-- Les justifications seront chargées ici par JavaScript -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- JS composants -->
+    <script src="../composant/sidebar/sidebarEtudiant.js"></script>
+    <script src="../composant/navbar/navbar.js"></script>
+    <script src="../../JS/auth/deconnexion.js"></script>
+    <script src="../../JS/etudiant/listeJustification.js"></script>
+</body>
+</html>
