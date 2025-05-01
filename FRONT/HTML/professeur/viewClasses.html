@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C3AED",
+                        secondary: "#F59E0B",
+                        accent: "#EC4899",
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 ">
+    <div class="flex h-screen -mt-20">
+        <div id="sidebarprof" class=""></div>
+
+        <div class="flex-1">
+            <div id="navbar"></div>
+
+            <main class="flex-1 space-y-8 p-6 w-full">
+            <div class="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow-lg">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Classes pour ce cours</h2>
+                        <a href="../professeur/listeCours.html"><p class="text-gray-500 mt-1">← Retour à la liste des cours</p></a>
+                    </div>
+            
+                    <div class="flex space-x-3">
+                        <div class="relative group">
+                            <button class="text-black shadow px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 transition-colors">
+                                filtrer
+                            </button>
+                            <!-- <div class="hidden group-hover:block absolute bg-white shadow-md rounded p-2 right-0 z-10 border border-gray-100">
+                                <div class="flex">
+                                    <div>
+                                        <label class="block text-sm text-gray-500">Date</label>
+                                        <input type="date" id="dateFilter" class="border p-2 rounded w-full">
+                                    </div>
+                                    <div class="flex flex-col ml-2">
+                                        <button onclick="filterCourses()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                                            Filtrer
+                                        </button>
+                                        <button onclick="resetFilter()" class="text-gray-500 hover:text-gray-700 text-sm flex items-center mt-2">
+                                            Réinitialiser
+                                        </button>
+                                    </div>
+                                </div>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+                            <div id="classesContainer" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Les classes seront insérées ici -->
+                </div>
+            </div>
+        
+            <template id="student-template">
+                <li class="flex items-center justify-between py-2 px-3 border-b">
+                    <span class="text-gray-700 font-medium student-name"></span>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" class="form-checkbox absence-checkbox text-purple-600 rounded">
+                        <span class="ml-2 text-sm text-gray-600">Absent</span>
+                    </label>
+                </li>
+            </template>
+
+            </main>
+        
+</div>
+</div>
+
+    <script src="../../JS/professeur/viewClasses.js"></script>
+    <script src="../../JS/auth/deconnexion.js"></script>
+    <script src="../composant/navbar/navbar.js"></script>
+    <script src="../composant/sidebar/sidebarprof.js"></script>
+</body>
+</html>
