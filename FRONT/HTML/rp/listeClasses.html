@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Classes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#7C3AED',
+                        secondary: '#F59E0B',
+                        accent: '#EC4899',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex h-screen -mt-20">
+        <div id="sidebar" class=""></div>
+
+        <div class="flex-1">
+            <div id="navbar"></div>
+
+            <main class="flex-1 space-y-8 p-6 w-[100%]">
+                <div class="flex-1 p-6 rounded shadow  overflow-y-auto h-[80vh]">
+                    <!-- En-tête avec titre et boutons -->
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2
+                                class="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                                Liste des Classes</h2>
+                            <p class="text-gray-500 mt-1">Gestion des classes de l'établissement</p>
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <!-- Filtres -->
+                            <div class="relative group">
+                                <button id="filterButton"
+                                    class="text-black shadow px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 transition-colors">
+                                    <i class="fas fa-filter mr-2"></i> Filtrer
+                                </button>
+                                <div id="filterDropdown"
+                                    class="hidden absolute bg-white shadow-md rounded p-4 right-0 z-10 border border-gray-100 w-96">
+                                    <!-- Barre de recherche -->
+                                    <div class="flex items-center space-x-2 mb-4">
+                                        <div class="relative flex-1">
+                                            <input type="search" id="searchInput"
+                                                placeholder="Rechercher par classe, filière..."
+                                                class="border p-2 rounded pl-10 w-full focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                            <svg class="absolute left-3 top-3 h-4 w-4 text-gray-400" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                            </svg>
+                                        </div>
+                                        <button id="searchButton"
+                                            class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Filtres par niveau -->
+                                    <div class="mb-4">
+                                        <p class="text-sm font-medium text-gray-700 mb-2">Filtrer par niveau :</p>
+                                        <div class="flex flex-wrap gap-2">
+                                            <button
+                                                class="filter-btn niveau-btn px-3 py-1 rounded text-sm bg-purple-600 text-white"
+                                                data-niveau="all">Toutes</button>
+                                            <button
+                                                class="filter-btn niveau-btn px-3 py-1 rounded text-sm bg-gray-200 text-gray-700"
+                                                data-niveau="Licence 1">Licence 1</button>
+                                            <button
+                                                class="filter-btn niveau-btn px-3 py-1 rounded text-sm bg-gray-200 text-gray-700"
+                                                data-niveau="Licence 2">Licence 2</button>
+                                            <button
+                                                class="filter-btn niveau-btn px-3 py-1 rounded text-sm bg-gray-200 text-gray-700"
+                                                data-niveau="Licence 3">Licence 3</button>
+                                            <button
+                                                class="filter-btn niveau-btn px-3 py-1 rounded text-sm bg-gray-200 text-gray-700"
+                                                data-niveau="Master 1">Master 1</button>
+                                            <button
+                                                class="filter-btn niveau-btn px-3 py-1 rounded text-sm bg-gray-200 text-gray-700"
+                                                data-niveau="Master 2">Master 2</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Filtres par filière -->
+                                    <div class="mb-4">
+                                        <p class="text-sm font-medium text-gray-700 mb-2">Filtrer par filière :</p>
+                                        <select id="filiereFilter"
+                                            class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                            <option value="all">Toutes les filières</option>
+                                            <option value="Dev/mobile">Dev/mobile</option>
+                                            <option value="Marketing">Marketing</option>
+                                            <!-- Ajoutez d'autres filières selon votre base de données -->
+                                        </select>
+                                    </div>
+
+                                    <!-- Actions -->
+                                    <div class="flex justify-between items-center pt-3 border-t border-gray-200">
+                                        <button id="clearAllFiltersBtn"
+                                            class="text-gray-600 hover:text-gray-800 flex items-center text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1"
+                                                viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            Réinitialiser
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bouton Ajouter -->
+                            <button id="addClassBtn"
+                                class="text-white bg-gradient-to-r from-primary to-accent px-4 py-2 rounded hover:bg-purple-700">
+                                <i class="fas fa-plus mr-2"></i> Nouvelle Classe
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Résultats de recherche -->
+                    <div id="searchResultsInfo"
+                        class="hidden mb-4 p-3 bg-gray-100 rounded flex items-center justify-between">
+                        <div class="flex items-center">
+                            <span class="font-medium mr-2">Filtres actifs :</span>
+                            <span id="currentSearchTerm" class="bg-gray-200 px-3 py-1 rounded-full text-sm mr-2"></span>
+                            <span id="currentFilterTerm" class="bg-gray-200 px-3 py-1 rounded-full text-sm"></span>
+                        </div>
+                        <button id="clearAllFiltersBtn"
+                            class="text-red-500 hover:text-red-700 text-sm flex items-center">
+                            <i class="fas fa-times mr-1"></i> Tout effacer
+                        </button>
+                    </div>
+
+                    <!-- Liste des classes -->
+                    <div class="">
+                        <div id="classesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+                            <!-- Contenu chargé dynamiquement -->
+                            <div class="col-span-full py-16 text-center animate-pulse">
+                                <div
+                                    class="mx-auto w-28 h-28 rounded-full bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center mb-6 shadow-inner">
+                                    <i class="fas fa-school text-4xl text-gray-300"></i>
+                                </div>
+                                <h3 class="text-xl font-medium text-gray-700">Chargement en cours...</h3>
+                                <p class="text-gray-400 mt-2">Veuillez patienter</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal d'ajout classe -->
+    <div id="addClassModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="flex justify-between items-center border-b px-6 py-4">
+                <h3 class="text-lg font-semibold text-gray-800">Nouvelle Classe</h3>
+                <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <p id="nextClassId" class="text-sm text-gray-500 mb-4"></p>
+
+                <form id="classForm">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="libelle">Libellé</label>
+                        <input type="text" id="libelle" name="libelle"
+                            class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <p id="libelleError" class="text-red-500 text-xs mt-1 hidden">Le libellé est obligatoire</p>
+
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="filiere">Filière</label>
+                        <input type="text" id="filiere" name="filiere"
+                            class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <p id="filiereError" class="text-red-500 text-xs mt-1 hidden">La filière est obligatoire</p>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="niveau">Niveau*</label>
+                        <select id="niveau" name="niveau"
+                            class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="Licence 1">Licence 1</option>
+                            <option value="Licence 2">Licence 2</option>
+                            <option value="Licence 3">Licence 3</option>
+                            <option value="Master 1">Master 1</option>
+                            <option value="Master 2">Master 2</option>
+                        </select>
+                        <p id="niveauError" class="text-red-500 text-xs mt-1 hidden">Le niveau est obligatoire</p>
+                    </div>
+                </form>
+            </div>
+            <div class="flex justify-end border-t px-6 py-4">
+                <button id="cancelModalBtn" class="px-4 py-2 text-gray-600 hover:text-gray-800 mr-2">Annuler</button>
+                <button id="submitClassBtn"
+                    class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal de modification d'une classe-->
+    <div id="editClassModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="flex justify-between items-center border-b px-6 py-4">
+                <h3 class="text-lg font-semibold text-gray-800">Modifier Classe</h3>
+                <button id="closeEditModalBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="editClassForm">
+                    <input type="hidden" id="editClassId">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="editLibelle">Libellé</label>
+                        <input type="text" id="editLibelle" name="libelle"
+                            class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <p id="editLibelleError" class="text-red-500 text-xs mt-1 hidden">Le libellé est obligatoire</p>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="editFiliere">Filière</label>
+                        <input type="text" id="editFiliere" name="filiere"
+                            class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <p id="editFiliereError" class="text-red-500 text-xs mt-1 hidden">La filière est obligatoire</p>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="editNiveau">Niveau*</label>
+                        <select id="editNiveau" name="niveau"
+                            class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="Licence 1">Licence 1</option>
+                            <option value="Licence 2">Licence 2</option>
+                            <option value="Licence 3">Licence 3</option>
+                            <option value="Master 1">Master 1</option>
+                            <option value="Master 2">Master 2</option>
+                        </select>
+                        <p id="editNiveauError" class="text-red-500 text-xs mt-1 hidden">Le niveau est obligatoire</p>
+                    </div>
+                </form>
+            </div>
+            <div class="flex justify-end border-t px-6 py-4">
+                <button id="cancelEditModalBtn"
+                    class="px-4 py-2 text-gray-600 hover:text-gray-800 mr-2">Annuler</button>
+                <button id="submitEditClassBtn"
+                    class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal de confirmation d'archivage -->
+    <div id="archiveConfirmModal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="flex justify-between items-center border-b px-6 py-4">
+                <h3 class="text-lg font-semibold text-gray-800" id="archiveModalTitle">Confirmer l'archivage</h3>
+                <button id="closeArchiveConfirmBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <p class="text-gray-700" id="archiveModalMessage">Êtes-vous sûr de vouloir archiver cette classe ?</p>
+                <p class="text-sm text-gray-500 mt-2" id="archiveModalNote">Cette action est réversible.</p>
+            </div>
+            <div class="flex justify-end border-t px-6 py-4">
+                <button id="cancelArchiveBtn" class="px-4 py-2 text-gray-600 hover:text-gray-800 mr-2">Annuler</button>
+                <button id="confirmArchiveBtn"
+                    class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal pour afficher les étudiants -->
+    <div id="studentsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center border-b px-6 py-4">
+                <h3 class="text-lg font-semibold text-gray-800" id="studentsModalTitle">Étudiants de la classe</h3>
+                <button id="closeStudentsModalBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1">
+                <div class="mb-4 flex justify-between items-center">
+                    <div>
+                        <p class="text-gray-600" id="classInfo"></p>
+                        <p class="text-sm text-gray-500" id="studentsCount"></p>
+                    </div>
+                    <button id="exportStudentsBtn"
+                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center">
+                        <i class="fas fa-file-export mr-2"></i> Exporter
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Matricule</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Nom</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Prénom</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Email</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="studentsTableBody">
+                            <!-- Les étudiants seront chargés ici dynamiquement -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="flex justify-end border-t px-6 py-4">
+                <button id="closeStudentsModalFooterBtn"
+                    class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="../composant/sidebar/sidebar.js"></script>
+    <script src="../composant/navbar/navbar.js"></script>
+    <script src="../../JS/auth/deconnexion.js"></script>
+    <script src="../../JS/rp/listeClasses.js"></script>
+</body>
+
+</html>
