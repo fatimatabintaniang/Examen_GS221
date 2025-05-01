@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Professeurs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#7C3AED',
+                        secondary: '#F59E0B',
+                        accent: '#EC4899',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex h-screen -mt-20">
+        <div id="sidebar" class=""></div>
+
+        <div class="flex-1">
+            <div id="navbar"></div>
+
+            <!-- Modal pour ajouter un professeur -->
+            <div id="addProfessorModal"
+                class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                    <div class="mt-3 text-center">
+                        <h3 class="text-lg leading-6 font-medium text-primary">Nouveau Professeur</h3>
+
+                        <form id="addProfessorForm" class="mt-4 space-y-4">
+                            <div class=" grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="professorNom"
+                                        class="block text-sm font-medium text-gray-700 text-left">Nom</label>
+                                    <input type="text" id="professorNom" class="mt-1 p-2 w-full border rounded-md">
+                                    <p id="professorNomError" class="text-red-500 text-xs mt-1 hidden">le nom est
+                                        obligatoire</p>
+                                </div>
+
+                                <div>
+                                    <label for="professorPrenom"
+                                        class="block text-sm font-medium text-gray-700 text-left">Prénom</label>
+                                    <input type="text" id="professorPrenom" class="mt-1 p-2 w-full border rounded-md">
+                                    <p id="professorPrenomError" class="text-red-500 text-xs mt-1 hidden">Le prenom est
+                                        obligatoire</p>
+                                </div>
+
+                            </div>
+
+                            <div class=" grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="professorEmail"
+                                        class="block text-sm font-medium text-gray-700 text-left">Email</label>
+                                    <input type="email" id="professorEmail" class="mt-1 p-2 w-full border rounded-md">
+                                    <p id="professorEmailError" class="text-red-500 text-xs mt-1 hidden">L'email est
+                                        obligatoire</p>
+                                </div>
+
+                                <div>
+                                    <label for="professorSpecialite"
+                                        class="block text-sm font-medium text-gray-700 text-left">Spécialité</label>
+                                    <input type="text" id="professorSpecialite"
+                                        class="mt-1 p-2 w-full border rounded-md">
+                                    <p id="professorSpecialiteError" class="text-red-500 text-xs mt-1 hidden">Le
+                                        specialite est obligatoire</p>
+                                </div>
+                            </div>
+
+
+                            <div>
+                                <label for="professorGrade"
+                                    class="block text-sm font-medium text-gray-700 text-left">Grade</label>
+                                <input type="text" id="professorGrade" class="mt-1 p-2 w-full border rounded-md">
+                                <p id="professorGradeError" class="text-red-500 text-xs mt-1 hidden">Le grade est
+                                    obligatoire</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 text-left">Classes</label>
+                                <div class="mt-2 space-y-2">
+                                    <!-- Les cases à cocher pour les classes seront ajoutées dynamiquement -->
+                                    <div id="classesCheckboxes" class="flex"></div>
+                                </div>
+                                <p id="classesError" class="text-red-500 text-xs mt-1 hidden">Veuillez sélectionner au
+                                    moins une classe</p>
+                            </div>
+
+
+
+                            <div class="flex justify-end space-x-3 pt-4">
+                                <button type="button" id="cancelAddProfessor"
+                                    class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+                                    Annuler
+                                </button>
+                                <button type="submit"
+                                    class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 bg-gradient-to-r from-primary to-accent">
+                                    Enregistrer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal pour modifier un professeur -->
+            <div id="editProfessorModal"
+                class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                <div class="relative top-20 mx-auto p-5 border w-[50%] shadow-lg rounded-md bg-white">
+                    <div class="mt-3 text-center">
+                        <h3 class="text-lg leading-6 font-medium text-primary">Modifier Professeur</h3>
+
+                        <form id="editProfessorForm" class="mt-4 space-y-4">
+                            <input type="hidden" id="editProfessorId">
+                            <input type="hidden" id="editUserId">
+
+                          <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label for="editProfessorNom"
+                                    class="block text-sm font-medium text-gray-700 text-left">Nom</label>
+                                <input type="text" id="editProfessorNom" 
+                                    class="mt-1 p-2 w-full border rounded-md">
+                                <p id="editProfessorNomError" class="text-red-500 text-xs mt-1 hidden">Ce champ est
+                                    obligatoire</p>
+                            </div>
+
+                            <div>
+                                <label for="editProfessorPrenom"
+                                    class="block text-sm font-medium text-gray-700 text-left">Prénom</label>
+                                <input type="text" id="editProfessorPrenom" 
+                                    class="mt-1 p-2 w-full border rounded-md">
+                                <p id="editProfessorPrenomError" class="text-red-500 text-xs mt-1 hidden">Ce champ est
+                                    obligatoire</p>
+                            </div>
+                          </div>
+
+                           <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label for="editProfessorEmail"
+                                    class="block text-sm font-medium text-gray-700 text-left">Email</label>
+                                <input type="email" id="editProfessorEmail" 
+                                    class="mt-1 p-2 w-full border rounded-md">
+                                <p id="editProfessorEmailError" class="text-red-500 text-xs mt-1 hidden">Ce champ est
+                                    obligatoire</p>
+                            </div>
+
+                            <div>
+                                <label for="editProfessorSpecialite"
+                                    class="block text-sm font-medium text-gray-700 text-left">Spécialité</label>
+                                <input type="text" id="editProfessorSpecialite" 
+                                    class="mt-1 p-2 w-full border rounded-md">
+                                <p id="editProfessorSpecialiteError" class="text-red-500 text-xs mt-1 hidden">Ce champ
+                                    est obligatoire</p>
+                            </div>
+                           </div>
+
+                            <div>
+                                <label for="editProfessorGrade"
+                                    class="block text-sm font-medium text-gray-700 text-left">Grade</label>
+                                <input type="text" id="editProfessorGrade" 
+                                    class="mt-1 p-2 w-full border rounded-md">
+                                <p id="editProfessorGradeError" class="text-red-500 text-xs mt-1 hidden">Ce champ est
+                                    obligatoire</p>
+                            </div>
+
+                            <div class="">
+                                <label class="block text-sm font-medium text-gray-700 text-left">Classes</label>
+                                <div class="mt-2 space-y-2 ">
+                                    <div id="editClassesCheckboxes"></div>
+                                </div>
+                                <p id="editClassesError" class="text-red-500 text-xs mt-1 hidden">Veuillez sélectionner
+                                    au moins une classe</p>
+                            </div>
+
+                            <div class="flex justify-end space-x-3 pt-4">
+                                <button type="button" id="cancelEditProfessor"
+                                    class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+                                    Annuler
+                                </button>
+                                <button type="submit"
+                                    class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 bg-gradient-to-r from-primary to-accent">
+                                    Enregistrer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Modal de confirmation d'archivage -->
+            <div id="archiveConfirmModal"
+                class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+                <div class="bg-white rounded-xl shadow-xl w-full max-w-md">
+                    <div class="p-6 text-center">
+                        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 mb-4">
+                            <i class="fas fa-archive text-yellow-600 text-xl"></i>
+                        </div>
+                        <h3 id="archiveModalTitle" class="text-lg font-medium text-gray-900 mb-2">Confirmer l'archivage
+                        </h3>
+                        <p id="archiveModalMessage" class="text-sm text-gray-500 mb-6">
+                            Êtes-vous sûr de vouloir archiver ce professeur ?
+                        </p>
+                        <div class="flex justify-center space-x-4">
+                            <button id="archiveModalCancelBtn" type="button"
+                                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                Annuler
+                            </button>
+                            <button id="archiveModalConfirmBtn" type="button"
+                                class="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                                Confirmer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal pour afficher les classes du professeur -->
+            <div id="viewProfessorClassesModal"
+                class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+                <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <!-- En-tête -->
+                    <div class="sticky top-0 bg-white p-6  flex justify-between items-start">
+                        <div>
+                            <h3 id="professorClassesModalTitle" class="text-xl font-bold text-gray-800"></h3>
+                            <p id="professorClassesModalSubtitle" class="text-sm text-gray-500 mt-1"></p>
+                        </div>
+                        <button onclick="closeViewProfessorClassesModal()" class="text-gray-400 hover:text-gray-500">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <!-- Contenu - Liste des classes -->
+                    <div class="p-6">
+                        <div id="professorClassesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Les cartes de classes seront ajoutées ici dynamiquement -->
+                        </div>
+                    </div>
+
+                    <!-- Pied de page -->
+                    <div class="sticky bottom-0 bg-white p-4  flex justify-end">
+                        <button onclick="closeViewProfessorClassesModal()"
+                            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors">
+                            Fermer
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <main class="flex-1 space-y-8 p-6 ">
+                <div class="flex-1 p-2 rounded shadow ">
+                    <div class="flex justify-between items-center mb-4 ">
+                        <div>
+                            <h2
+                                class="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                                Liste des Professeurs</h2>
+                            <p class="text-gray-500 mt-1">Gestion des professeurs</p>
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <div class="relative group">
+                                <button id="filterButton"
+                                    class="text-black shadow px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 transition-colors">Filtrer</button>
+                                <div id="filterDropdown"
+                                    class="hidden absolute bg-white shadow-md rounded p-2 right-0 z-10 border border-gray-100 w-96">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <div class="relative flex-1">
+                                            <input type="search" id="searchInput"
+                                                placeholder="Nom, Prénom ou Spécialité..."
+                                                class="border p-2 rounded pl-10 w-full focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                            <svg class="absolute left-3 top-3 h-4 w-4 text-gray-400" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                            </svg>
+                                        </div>
+                                        <button id="searchButton"
+                                            class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 bg-gradient-to-r from-primary to-accent">
+                                            Rechercher
+                                        </button>
+                                    </div>
+                                    <div class="flex space-x-3">
+                                        <button id="showArchivedBtn"
+                                            class="bg-gray-200 text-black px-4 py-2 rounded hover:bg-gray-300 text-sm">
+                                            Voir les archivés
+                                        </button>
+                                        <button id="clearSearchBtn"
+                                            class="text-gray-600 hover:text-gray-800 flex items-center text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1"
+                                                viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            Effacer
+                                        </button>
+                                    </div>
+                                    <div id="searchResultsInfo"
+                                        class="hidden mt-3 p-3 bg-gray-100 rounded flex items-center">
+                                        <span class="font-medium mr-2">Résultats pour :</span>
+                                        <span id="currentSearchTerm"
+                                            class="bg-gray-200 px-3 py-1 rounded-full text-sm"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button id="addProfessorBtn"
+                                class="text-white bg-gradient-to-r from-primary to-accent px-4 py-2 rounded">
+                                Nouveau
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white text-black p-4 rounded-lg shadow">
+                        <div id="professorsContainer" class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 gap-6">
+                            <div class="col-span-full py-16 text-center animate-pulse">
+                                <div
+                                    class="mx-auto w-28 h-28 rounded-full bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center mb-6 shadow-inner">
+                                    <i class="fas fa-chalkboard-teacher text-4xl text-gray-300"></i>
+                                </div>
+                                <h3 class="text-xl font-medium text-gray-700">Chargement en cours...</h3>
+                                <p class="text-gray-400 mt-2">Veuillez patienter</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="../composant/sidebar/sidebar.js"></script>
+    <script src="../composant/navbar/navbar.js"></script>
+    <script src="../../JS/auth/deconnexion.js"></script>
+    <script src="../../JS/rp/listeProfesseurs.js"></script>
+
+</body>
+
+</html>
