@@ -8,6 +8,8 @@ let db = {
     cours_classe: []
 };
 
+let currentViewMode = 'cards'; // 'cards' ou 'list'
+
 // Fonction principale pour charger les données
 async function loadData() {
     try {
@@ -102,6 +104,14 @@ function formatTime(timeString) {
     return timeString.substring(0, 5); // HH:MM
 }
 
+// Fonction pour basculer entre les modes d'affichage
+function toggleViewMode() {
+    currentViewMode = currentViewMode === 'cards' ? 'list' : 'cards';
+    const icon = document.getElementById('viewIcon');
+    icon.className = currentViewMode === 'cards' ? 'fas fa-th-list' : 'fas fa-th-large';
+    displayCourses(db.cours); // Réafficher les cours avec le nouveau mode
+}
+
 // Afficher les cours
 function displayCourses(courses) {
     const container = document.getElementById('coursesContainer');
@@ -119,62 +129,130 @@ function displayCourses(courses) {
         return;
     }
 
-    container.innerHTML = courses.map(cour => `
-        <div class="relative bg-white rounded-2xl overflow-hidden shadow-lg border transition-all duration-500 group transform hover:-translate-y-2 border border-gray-100">
-            <!-- Bandeau coloré -->
-            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-accent"></div>
+    if (currentViewMode === 'cards') {
+        // Mode carte
+        container.innerHTML = courses.map(cour => `
+            <div class="relative bg-white rounded-2xl overflow-hidden shadow-lg border transition-all duration-500 group transform hover:-translate-y-2 border border-gray-100">
+                <!-- Bandeau coloré -->
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-accent"></div>
 
-            <!-- Contenu principal -->
-            <div class="p-5 pt-6">
-                <!-- En-tête -->
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h3 class="text-xl font-bold text-gray-800">
-                            ${formatDate(cour.date)}
-                        </h3>
-                        <p class="text-sm text-gray-500 mt-1">
-                            ${cour.semestre || 'Non défini'}
-                        </p>
+                <!-- Contenu principal -->
+                <div class="p-5 pt-6">
+                    <!-- En-tête -->
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800">
+                                ${formatDate(cour.date)}
+                            </h3>
+                            <p class="text-sm text-gray-500 mt-1">
+                                ${cour.semestre || 'Non défini'}
+                            </p>
+                        </div>
+                        <span class="bg-gray-100 shadow-inner rounded-lg px-2.5 py-1 text-sm font-medium text-gray-700">
+                            ${formatTime(cour.heure_debut)}-${formatTime(cour.heure_fin)}
+                        </span>
                     </div>
-                    <span class="bg-gray-100 shadow-inner rounded-lg px-2.5 py-1 text-sm font-medium text-gray-700">
-                        ${formatTime(cour.heure_debut)}-${formatTime(cour.heure_fin)}
-                    </span>
+
+                    <!-- Professeur et heures -->
+                    <div class="mb-4 flex flex-wrap gap-2">
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            ${getProfesseurName(cour.id_professeur)}
+                        </span>
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            ${cour.nombre_heures || '0'}h
+                        </span>
+                    </div>
+
+                    <!-- Module -->
+                    <div class="mb-2">
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            ${getModuleName(cour.id_module)}
+                        </span>
+                    </div>
                 </div>
 
-                <!-- Professeur et heures -->
-                <div class="mb-4 flex flex-wrap gap-2">
-                    <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        ${getProfesseurName(cour.id_professeur)}
-                    </span>
-                    <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        ${cour.nombre_heures || '0'}h
-                    </span>
+                <!-- Actions -->
+                <div class="px-5 py-4 bg-gray-50 border-t border-gray-100 flex justify-end space-x-3">
+                    <button onclick="editCourse('${cour.id_cours}')" class="text-xs text-gray-600 hover:text-primary transition-colors">
+                        ✏️ Modifier
+                    </button>
+                    <button onclick="viewClasses('${cour.id_cours}')" class="text-xs text-gray-600 hover:text-primary transition-colors flex items-center gap-1">
+                        <i class="fas fa-users mr-1"></i> Voir Classes
+                    </button>
+                    <button onclick="showCancelConfirmation('${cour.id_cours}')" class="text-xs text-red-500 hover:text-red-700 transition-colors flex items-center gap-1">
+                        <i class="fas fa-trash-alt"></i> Annuler
+                    </button>
                 </div>
-
-                <!-- Module -->
-                <div class="mb-2">
-                    <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        ${getModuleName(cour.id_module)}
-                    </span>
-                </div>
-
-              
             </div>
-
-            <!-- Actions -->
-            <div class="px-5 py-4 bg-gray-50 border-t border-gray-100 flex justify-end space-x-3">
-                <button onclick="editCourse('${cour.id_cours}')" class="text-xs text-gray-600 hover:text-primary transition-colors">
-                    ✏️ Modifier
-                </button>
-               <button onclick="viewClasses('${cour.id_cours}')" class="text-xs text-gray-600 hover:text-primary transition-colors flex items-center gap-1">
-    <i class="fas fa-users mr-1"></i> Voir Classes
-</button>
-               <button onclick="showCancelConfirmation('${cour.id_cours}')" class="text-xs text-red-500 hover:text-red-700 transition-colors flex items-center gap-1">
-    <i class="fas fa-trash-alt"></i> Annuler
-</button>
+        `).join('');
+    } else {
+        // Mode liste
+        container.innerHTML = `
+            <div class="col-span-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Heure</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Module</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Professeur</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Classes</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${courses.map(cour => `
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">${formatDate(cour.date)}</div>
+                                    <div class="text-sm text-gray-500">${cour.semestre || 'Non défini'}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">
+                                        ${formatTime(cour.heure_debut)} - ${formatTime(cour.heure_fin)}
+                                    </div>
+                                    <div class="text-sm text-gray-500">${cour.nombre_heures || '0'}h</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        ${getModuleName(cour.id_module)}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">${getProfesseurName(cour.id_professeur)}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex flex-wrap gap-1">
+                                        ${cour.classes ? cour.classes.map(classId => {
+                                            const classe = db.classe.find(c => c.id_classe === classId);
+                                            return classe ? `
+                                                <span class="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800">
+                                                    ${classe.libelle}
+                                                </span>
+                                            ` : '';
+                                        }).join('') : ''}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button onclick="editCourse('${cour.id_cours}')" class="text-indigo-600 hover:text-indigo-900">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="viewClasses('${cour.id_cours}')" class="text-purple-600 hover:text-purple-900">
+                                            <i class="fas fa-users"></i>
+                                        </button>
+                                        <button onclick="showCancelConfirmation('${cour.id_cours}')" class="text-red-600 hover:text-red-900">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
             </div>
-        </div>
-    `).join('');
+        `;
+    }
 }
 
 // Filtrer les cours
@@ -231,6 +309,7 @@ function loadProfessorOptions(selectId = 'newCourseProfessor') {
         }
     });
 }
+
 // Charger les options des modules dans le modal
 function loadModuleOptions(selectId = 'newCourseModule') {
     const select = document.getElementById(selectId);
@@ -270,6 +349,7 @@ function loadClassOptions(containerId = 'classesCheckboxContainer') {
         container.appendChild(div);
     });
 }
+
 // Ouvrir le modal d'ajout
 function openAddCourseModal() {
     const modal = document.getElementById('addCourseModal');
@@ -287,7 +367,6 @@ function closeAddCourseModal() {
     document.getElementById('addCourseForm').reset();
 }
 
-
 function validateDate(date) {
     if (!date) return "La date est requise";
     if (new Date(date) < new Date()) return "La date ne peut pas être dans le passé";
@@ -298,7 +377,6 @@ function validateTime(time) {
     if (!time) return "L'heure est requise";
     return "";
 }
-
 
 function validateStartEndTime(startTime, endTime) {
     if (startTime && endTime) {
@@ -356,7 +434,7 @@ async function saveNewCourse(event) {
     // Afficher les erreurs
     document.getElementById('newCourseDate-error').textContent = errors.date;
     document.getElementById('newCourseStartTime-error').textContent = errors.startTime;
-    document.getElementById('newCourseEndTime-error').textContent = errors.endTime || errors.timeComparison; // Affiche l'erreur de comparaison sous endTime
+    document.getElementById('newCourseEndTime-error').textContent = errors.endTime || errors.timeComparison;
     document.getElementById('newCourseHours-error').textContent = errors.hours;
     document.getElementById('newCourseSemester-error').textContent = errors.semester;
     document.getElementById('newCourseProfessor-error').textContent = errors.professor;
@@ -420,7 +498,6 @@ async function saveNewCourse(event) {
 
     } catch (error) {
         console.error("Erreur:", error);
-        // Au lieu d'utiliser alert, vous pourriez afficher cette erreur dans un élément dédié
         document.getElementById('formGeneralError').textContent = "Échec de l'ajout du cours: " + error.message;
     }
 }
@@ -462,7 +539,6 @@ function closeEditCourseModal() {
     document.getElementById('editCourseModal').classList.add('hidden');
     document.getElementById('editCourseForm').reset();
 }
-
 
 // Fonction pour sauvegarder les modifications
 async function saveEditedCourse(event) {
@@ -575,30 +651,50 @@ async function saveEditedCourse(event) {
     }
 }
 
-
-// Ajoutez aussi des écouteurs pour la validation en temps réel si vous le souhaitez :
-function setupRealTimeValidation() {
-    document.getElementById('newCourseDate').addEventListener('change', function () {
-        document.getElementById('newCourseDate-error').textContent = validateDate(this.value);
-    });
-
-    // Ajoutez des écouteurs similaires pour les autres champs
-}
-
-// Actions sur les cours (à implémenter)
-function editCourse(courseId) {
-    openEditCourseModal(courseId);
-}
+// Fonction pour ouvrir le modal avec les classes
 function viewClasses(courseId) {
-    console.log(`Voir classes pour cours ${courseId}`);
-    // À implémenter
+    const course = db.cours.find(c => c.id_cours === courseId);
+    if (!course) return;
+  
+    // Mettre à jour le titre et sous-titre
+    document.getElementById('viewClassesModalTitle').textContent = 
+      `Classes pour ${getModuleName(course.id_module)}`;
+  
+    // Générer les cartes des classes
+    const container = document.getElementById('classesCardsContainer');
+    container.innerHTML = '';
+  
+    if (!course.classes || course.classes.length === 0) {
+      container.innerHTML = `
+        <div class="col-span-full py-12 text-center">
+          <div class="mx-auto w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+            <i class="fas fa-users text-gray-400 text-xl"></i>
+          </div>
+          <p class="text-gray-500">Aucune classe associée à ce cours</p>
+        </div>
+      `;
+    } else {
+      course.classes.forEach(classId => {
+        const classe = db.classe.find(c => c.id_classe === classId);
+        if (!classe) return;
+  
+        container.innerHTML += `
+          <div class="rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div class="border border-gray-200 p-4 flex items-end">
+              <h4 class="text-black font-bold text-lg truncate">${classe.libelle}</h4>
+            </div>
+          </div>
+        `;
+      });
+    }
+  
+    // Afficher le modal
+    document.getElementById('viewClassesModal').classList.remove('hidden');
 }
 
-function cancelCourse(courseId) {
-    if (confirm(`Voulez-vous vraiment annuler le cours ${courseId} ?`)) {
-        console.log(`Cours ${courseId} annulé`);
-        // À implémenter: appel API pour suppression
-    }
+// Fonction pour fermer le modal de classe
+function closeViewClassesModal() {
+    document.getElementById('viewClassesModal').classList.add('hidden');
 }
 
 let currentCourseToCancel = null;
@@ -668,61 +764,10 @@ async function confirmCancelCourse() {
   }
 }
 
-// Fonction pour ouvrir le modal avec les classes
-function viewClasses(courseId) {
-    const course = db.cours.find(c => c.id_cours === courseId);
-    if (!course) return;
-  
-    // Mettre à jour le titre et sous-titre
-    document.getElementById('viewClassesModalTitle').textContent = 
-      `Classes pour ${getModuleName(course.id_module)}`;
-  
-    // Générer les cartes des classes
-    const container = document.getElementById('classesCardsContainer');
-    container.innerHTML = '';
-  
-    if (!course.classes || course.classes.length === 0) {
-      container.innerHTML = `
-        <div class="col-span-full py-12 text-center">
-          <div class="mx-auto w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-            <i class="fas fa-users text-gray-400 text-xl"></i>
-          </div>
-          <p class="text-gray-500">Aucune classe associée à ce cours</p>
-        </div>
-      `;
-    } else {
-      course.classes.forEach(classId => {
-        const classe = db.classe.find(c => c.id_classe === classId);
-        if (!classe) return;
-  
-     
-  
-        container.innerHTML += `
-          <div class="rounded-lg  overflow-hidden shadow-sm hover:shadow-md transition-shadow ">
-            <div class=" border border-gray-200 p-4 flex items-end ">
-              <h4 class="text-black font-bold text-lg truncate">${classe.libelle}</h4>
-            </div>
-         
-          </div>
-        `;
-      });
-    }
-  
-    // Afficher le modal
-    document.getElementById('viewClassesModal').classList.remove('hidden');
-  }
-  
-  // Fonction pour fermer le modal de classe
-  function closeViewClassesModal() {
-    document.getElementById('viewClassesModal').classList.add('hidden');
-  }
-  
-  // Gestion du clic en dehors du modal de classe
-  document.getElementById('viewClassesModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-      closeViewClassesModal();
-    }
-  });
+// Actions sur les cours
+function editCourse(courseId) {
+    openEditCourseModal(courseId);
+}
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', () => {
@@ -738,13 +783,17 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('cancelEditCourseBtn').addEventListener('click', closeEditCourseModal);
     document.getElementById('addCourseForm').addEventListener('submit', saveNewCourse);
     document.getElementById('editCourseForm').addEventListener('submit', saveEditedCourse);
-    setupRealTimeValidation();
     document.getElementById('cancelModalConfirmBtn').addEventListener('click', confirmCancelCourse);
     document.getElementById('cancelModalCancelBtn').addEventListener('click', hideCancelConfirmation);
     document.getElementById('cancelConfirmModal').addEventListener('click', (e) => {
         if (e.target === document.getElementById('cancelConfirmModal')) {
           hideCancelConfirmation();
         }
-      });
+    });
+    document.getElementById('toggleViewBtn').addEventListener('click', toggleViewMode);
+    document.getElementById('viewClassesModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeViewClassesModal();
+        }
+    });
 });
-

@@ -1,6 +1,7 @@
 // Fonction pour formater la date
 function formatDate(date) {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    //toLocaleDateString() convertit un objet Date en chaîne lisible
     return date.toLocaleDateString('fr-FR', options);
 }
 
@@ -15,7 +16,7 @@ function loadUserData() {
     try {
         const user = JSON.parse(localStorage.getItem('currentUser'));
         if (!user) {
-            console.warn("Aucun utilisateur connecté - Redirection vers login");
+            console.log("Aucun utilisateur connecté - Redirection vers login");
             window.location.href = '../../HTML/connexion/connexion.html';
             return;
         }

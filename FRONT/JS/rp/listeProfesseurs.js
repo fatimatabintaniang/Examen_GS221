@@ -2,6 +2,8 @@
 let allProfessors = [];
 let currentSearch = '';
 let showArchived = false;
+let currentViewMode = 'card';
+
 
 // Chargement initial des données
 document.addEventListener('DOMContentLoaded', async () => {
@@ -49,7 +51,87 @@ function displayProfessors(professors) {
         return;
     }
 
-    container.innerHTML = filtered.map(professor => getProfessorCardTemplate(professor)).join('');
+    if (currentViewMode === 'card') {
+        container.innerHTML = filtered.map(professor => getProfessorCardTemplate(professor)).join('');
+    } else {
+        container.innerHTML = getProfessorTableTemplate(filtered);
+    }
+}
+
+// Template pour une ligne du tableau
+function getProfessorTableRowTemplate(professor) {
+    const user = professor.utilisateur || {};
+    const isArchived = professor.archive === true;
+
+    return `
+        <tr class="${isArchived ? 'bg-yellow-50' : 'hover:bg-gray-50'} transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                    <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">
+                            ${user.prenom || 'Non défini'} ${user.nom || 'Non défini'}
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">${user.email || 'Non défini'}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">${professor.specialite || 'Non défini'}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                    ${professor.grade || 'Non défini'}
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${isArchived ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">
+                    ${isArchived ? 'Archivé' : 'Actif'}
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div class="flex space-x-2 justify-end">
+                    <button onclick="editProfessor('${professor.id_professeur}')" class="text-indigo-600 hover:text-indigo-900">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="viewProfessorClasses('${professor.id_professeur}')" class="text-purple-600 hover:text-purple-900">
+                        <i class="fas fa-users"></i>
+                    </button>
+                    <button onclick="showArchiveConfirmation('${professor.id_professeur}', ${!isArchived})" 
+                        class="${isArchived ? 'text-green-600 hover:text-green-900' : 'text-yellow-600 hover:text-yellow-900'}">
+                        ${isArchived ? '<i class="fas fa-undo"></i>' : '<i class="fas fa-archive"></i>'}
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `;
+}
+
+// Fonction pour récupérer les badges des classes
+async function getProfessorClassesBadges(professorId) {
+    try {
+        // Récupérer les classes du professeur
+        const response = await fetch(`http://localhost:3000/professeur_classe?id_professeur=${professorId}`);
+        const professorClasses = await response.json();
+        
+        // Récupérer toutes les classes
+        const classesResponse = await fetch('http://localhost:3000/classe');
+        const allClasses = await classesResponse.json();
+        
+        // Créer les badges
+        return professorClasses.map(pc => {
+            const classe = allClasses.find(c => c.id_classe === pc.id_classe);
+            return classe ? `
+                <span class="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800">
+                    ${classe.libelle}
+                </span>
+            ` : '';
+        }).join('');
+    } catch (error) {
+        console.error('Erreur:', error);
+        return '<span class="text-xs text-gray-500">Erreur de chargement</span>';
+    }
 }
 
 // Template pour une carte de professeur
@@ -90,6 +172,48 @@ function getProfessorCardTemplate(professor) {
             </div>
         </div>
     `;
+}
+
+
+// Template pour Le tableau de professeur
+function getProfessorTableTemplate(professors) {
+    return `
+        <div class="col-span-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spécialité</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    ${professors.map(professor => getProfessorTableRowTemplate(professor)).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+function switchToCardView() {
+    currentViewMode = 'card';
+    document.getElementById('cardViewBtn').classList.add('bg-primary', 'text-white');
+    document.getElementById('cardViewBtn').classList.remove('bg-gray-200', 'text-gray-700');
+    document.getElementById('listViewBtn').classList.add('bg-gray-200', 'text-gray-700');
+    document.getElementById('listViewBtn').classList.remove('bg-primary', 'text-white');
+    displayProfessors(allProfessors);
+}
+
+function switchToListView() {
+    currentViewMode = 'list';
+    document.getElementById('listViewBtn').classList.add('bg-primary', 'text-white');
+    document.getElementById('listViewBtn').classList.remove('bg-gray-200', 'text-gray-700');
+    document.getElementById('cardViewBtn').classList.add('bg-gray-200', 'text-gray-700');
+    document.getElementById('cardViewBtn').classList.remove('bg-primary', 'text-white');
+    displayProfessors(allProfessors);
 }
 
 
@@ -134,7 +258,6 @@ function hideSearchResultsInfo() {
     document.getElementById('searchResultsInfo').classList.add('hidden');
     currentSearch = '';
 }
-
 
 // Afficher une erreur
 function showError(message) {
@@ -492,6 +615,8 @@ function setupEventListeners() {
     document.querySelector('#editProfessorModal > div').addEventListener('click', (e) => {
         e.stopPropagation();
     });
+    document.getElementById('cardViewBtn').addEventListener('click', switchToCardView);
+    document.getElementById('listViewBtn').addEventListener('click', switchToListView);
 }
 
 // Fonction pour fermer le modal d'ajout

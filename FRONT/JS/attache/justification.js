@@ -1,4 +1,4 @@
-// Fonction pour charger les données depuis le fichier JSON
+// Fonction pour charger les données depuis le JSON Server
 async function loadData() {
     try {
         const response = await fetch('../../../BACK/data.json');
@@ -21,24 +21,18 @@ async function loadData() {
 // Fonction pour préparer les données des justifications
 function prepareJustificationsData(data) {
     if (!data) return [];
-    
+
     return data.justification.map(justification => {
-        // Trouver l'absence correspondante
         const absence = data.absence.find(a => a.id_absence === justification.id_absence) || {};
-        
-        // Trouver le cours correspondant
         const cours = data.cours.find(c => c.id_cours === absence.id_cours) || {};
-        
-        // Trouver l'étudiant
         const etudiant = data.etudiant.find(e => e.id_etudiant === absence.id_etudiant) || {};
         const utilisateurEtudiant = data.utilisateur.find(u => u.id_utilisateur === etudiant.id_utilisateur) || {};
-        
+
         return {
             id_justification: justification.id_justification,
             date: justification.date,
             motif: justification.motif,
-            etat: justification.etat === 'acceptée' ? 'acceptée' : 
-                  justification.etat === 'refusée' ? 'refusée' : 'attente',
+            etat: justification.etat || 'attente',
             etudiant: {
                 nomComplet: `${utilisateurEtudiant.prenom || ''} ${utilisateurEtudiant.nom || ''}`.trim(),
                 email: utilisateurEtudiant.email || ''
@@ -54,8 +48,8 @@ function prepareJustificationsData(data) {
 // Fonction pour filtrer les justifications
 function filterJustifications(justifications, filter) {
     if (!filter) return justifications;
-    
-    switch(filter) {
+
+    switch (filter) {
         case 'attente':
             return justifications.filter(j => j.etat === 'attente');
         case 'acceptee':
@@ -70,7 +64,7 @@ function filterJustifications(justifications, filter) {
 // Fonction pour afficher les justifications
 function renderJustifications(justifications) {
     const container = document.getElementById('justifications-container');
-    
+
     if (!container) {
         console.error("Container des justifications introuvable");
         return;
@@ -92,17 +86,18 @@ function renderJustifications(justifications) {
     container.innerHTML = justifications.map(justification => `
         <div class="relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 group transform hover:-translate-y-2 border border-gray-100">
             <div class="absolute top-0 left-0 w-full h-2 ${
-                justification.etat === 'acceptée' ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 
-                justification.etat === 'attente' ? 'bg-gradient-to-r from-yellow-500 to-amber-500' : 'bg-gradient-to-r from-red-500 to-orange-500'
+                justification.etat === 'acceptée' ? 'bg-gradient-to-r from-green-500 to-emerald-500' :
+                justification.etat === 'attente' ? 'bg-gradient-to-r from-yellow-500 to-amber-500' :
+                'bg-gradient-to-r from-red-500 to-orange-500'
             }"></div>
-            
-            <!-- Date -->
+
             <div class="p-5 pt-6">
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full ${
-                            justification.etat === 'acceptée' ? 'bg-green-100 text-green-800' : 
-                            justification.etat === 'attente' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
+                            justification.etat === 'acceptée' ? 'bg-green-100 text-green-800' :
+                            justification.etat === 'attente' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
                         }">
                             ${justification.etat}
                         </span>
@@ -115,7 +110,6 @@ function renderJustifications(justifications) {
                     </span>
                 </div>
 
-                <!-- Étudiant -->
                 <div class="mb-3">
                     <h4 class="text-sm font-medium text-gray-500 mb-1">Étudiant :</h4>
                     <p class="text-gray-700">
@@ -123,7 +117,6 @@ function renderJustifications(justifications) {
                     </p>
                 </div>
 
-                <!-- Cours -->
                 <div class="mb-3">
                     <h4 class="text-sm font-medium text-gray-500 mb-1">Cours :</h4>
                     <p class="text-gray-700">
@@ -131,7 +124,6 @@ function renderJustifications(justifications) {
                     </p>
                 </div>
 
-                <!-- Motif -->
                 <div class="mb-4">
                     <h4 class="text-sm font-medium text-gray-500 mb-1">Motif :</h4>
                     <p class="text-gray-700 line-clamp-3">
@@ -139,7 +131,6 @@ function renderJustifications(justifications) {
                     </p>
                 </div>
 
-                <!-- Actions -->
                 <div class="flex space-x-3">
                     ${justification.etat === 'attente' ? `
                         <button onclick="handleJustificationAction('accept', '${justification.id_justification}')" 
@@ -157,58 +148,57 @@ function renderJustifications(justifications) {
     `).join('');
 }
 
-// Gestionnaire d'actions pour les justifications
+// Gérer les actions (accepter/refuser)
 async function handleJustificationAction(action, justificationId) {
+    const newEtat = action === 'accept' ? 'acceptée' : 'refusée';
+
     try {
-        // Ici vous devriez faire un appel API réel
-        console.log(`Action: ${action} sur justification ID: ${justificationId}`);
-        
-        // Simulation de succès
-        alert(`Justification ${action === 'accept' ? 'acceptée' : 'refusée'} avec succès`);
-        
-        // Recharger les données
-        initPage();
+        const res = await fetch(`http://localhost:3000/justification/${justificationId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ etat: newEtat })
+        });
+
+        if (!res.ok) {
+            throw new Error("Erreur lors de la mise à jour");
+        }
+
+        alert(`Justification ${newEtat} avec succès`);
+        initPage(); // Recharger après mise à jour
     } catch (error) {
-        console.error('Erreur:', error);
-        alert('Une erreur est survenue');
+        console.error('Erreur lors de l\'action sur la justification:', error);
+        alert('Une erreur est survenue. Veuillez réessayer.');
     }
 }
 
 // Initialisation de la page
 async function initPage() {
-    // Récupérer le filtre actuel depuis l'URL
     const urlParams = new URLSearchParams(window.location.search);
     const currentFilter = urlParams.get('filter') || '';
-    
-    // Mettre à jour la valeur sélectionnée dans le select
-    document.getElementById('filter-select').value = currentFilter;
-    
-    // Charger les données
+
+    const filterSelect = document.getElementById('filter-select');
+    if (filterSelect) filterSelect.value = currentFilter;
+
     const data = await loadData();
-    
-    // Préparer les données des justifications
     const allJustifications = prepareJustificationsData(data);
-    
-    // Filtrer les justifications
     const filteredJustifications = filterJustifications(allJustifications, currentFilter);
-    
-    // Afficher les justifications
+
     renderJustifications(filteredJustifications);
 }
 
 // Gérer le changement de filtre
-document.getElementById('filter-select').addEventListener('change', function() {
+document.getElementById('filter-select').addEventListener('change', function () {
     const filterValue = this.value;
     const url = new URL(window.location.href);
-    
+
     if (filterValue) {
         url.searchParams.set('filter', filterValue);
     } else {
         url.searchParams.delete('filter');
     }
-    
+
     window.location.href = url.toString();
 });
 
-// Lancer l'initialisation quand la page est chargée
+// Lancer l'initialisation au chargement
 document.addEventListener('DOMContentLoaded', initPage);

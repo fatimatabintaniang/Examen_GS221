@@ -288,6 +288,7 @@ function showAlert(message, type) {
     }`;
     alertDiv.classList.remove('hidden');
     
+    //setTimeout : Fonction JavaScript qui exécute une action après un délai spécifié
     setTimeout(() => {
         alertDiv.classList.add('hidden');
     }, 5000);

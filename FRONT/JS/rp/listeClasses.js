@@ -5,6 +5,7 @@ let currentFilters = {
     niveau: 'all',
     filiere: 'all'
 };
+let currentViewMode = 'cards'; // 'cards' ou 'list'
 
 // Chargement initial des données
 document.addEventListener('DOMContentLoaded', async () => {
@@ -28,52 +29,53 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Fonction de validation du formulaire
-function validateClassForm() {
-    let isValid = true;
-    
-    // Validation libellé
-    const libelle = document.getElementById('libelle').value.trim();
-    if (!libelle) {
-        document.getElementById('libelleError').classList.remove('hidden');
-        isValid = false;
-    } else {
-        document.getElementById('libelleError').classList.add('hidden');
+// Fonction pour charger les classes
+async function loadClasses() {
+    try {
+        const response = await fetch('http://localhost:3000/classe');
+        if (!response.ok) throw new Error('Erreur de chargement');
+        
+        allClasses = await response.json();
+        displayClasses(allClasses);
+    } catch (error) {
+        console.error('Erreur:', error);
+        showError("Impossible de charger les classes");
     }
-    
-    // Validation filière
-    const filiere = document.getElementById('filiere').value.trim();
-    if (!filiere) {
-        document.getElementById('filiereError').classList.remove('hidden');
-        isValid = false;
-    } else {
-        document.getElementById('filiereError').classList.add('hidden');
-    }
-    
-    return isValid;
 }
 
-// Fonction pour configurer la validation en temps réel
-function setupRealTimeValidation() {
-    // Libellé
-    document.getElementById('libelle').addEventListener('input', function() {
-        if (this.value.trim()) {
-            document.getElementById('libelleError').classList.add('hidden');
-        }
-    });
-    
-    // Filière
-    document.getElementById('filiere').addEventListener('input', function() {
-        if (this.value.trim()) {
-            document.getElementById('filiereError').classList.add('hidden');
-        }
-    });
+// Chargez les filières disponibles dynamiquement
+async function loadFiliereOptions() {
+    try {
+        const response = await fetch('http://localhost:3000/classe');
+        const classes = await response.json();
+        
+        const filieres = [...new Set(classes.map(c => c.filiere).filter(Boolean))];
+        const select = document.getElementById('filiereFilter');
+        
+        select.innerHTML = '<option value="all">Toutes les filières</option>';
+        
+        filieres.forEach(filiere => {
+            const option = document.createElement('option');
+            option.value = filiere;
+            option.textContent = filiere;
+            select.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Erreur:', error);
+    }
+}
+
+function toggleViewMode() {
+    currentViewMode = currentViewMode === 'cards' ? 'list' : 'cards';
+    const icon = document.getElementById('viewIcon');
+    icon.className = currentViewMode === 'cards' ? 'fas fa-th-list' : 'fas fa-th-large';
+    displayClasses(allClasses); // Réafficher les classes avec le nouveau mode
 }
 
 // Afficher les classes
 function displayClasses(classes) {
     const container = document.getElementById('classesContainer');
-    
+
     if (!classes || classes.length === 0) {
         container.innerHTML = getNoClassesTemplate();
         return;
@@ -103,8 +105,73 @@ function displayClasses(classes) {
         return;
     }
 
-    container.innerHTML = filtered.map(classe => getClassCardTemplate(classe)).join('');
+    // Afficher selon le mode sélectionné
+    if (currentViewMode === 'cards') {
+        container.innerHTML = filtered.map(classe => getClassCardTemplate(classe)).join('');
+    } else {
+        container.innerHTML = `
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Libellé</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Filière</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Niveau</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${filtered.map(classe => getClassRowTemplate(classe)).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
     updateSearchResultsInfo();
+}
+
+function getClassRowTemplate(classe) {
+    const isArchived = classe.archive;
+
+    return `
+        <tr class="${isArchived ? 'bg-gray-50' : 'hover:bg-gray-50'}">
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                    <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">${classe.libelle || 'Non défini'}</div>
+                        <div class="text-sm text-gray-500">ID: ${classe.id_classe || 'Non défini'}</div>
+                    </div>
+                </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">${classe.filiere || 'Non défini'}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                    ${classe.niveau || 'Non défini'}
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                    ${isArchived ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">
+                    ${isArchived ? 'Archivée' : 'Active'}
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button onclick="viewStudents('${classe.id_classe}')" class="text-purple-600 hover:text-purple-900 mr-3 ${isArchived ? 'opacity-50 cursor-not-allowed' : ''}" ${isArchived ? 'disabled' : ''}>
+                    <i class="fas fa-users mr-1"></i>
+                </button>
+                <button onclick="editClass('${classe.id_classe}')" class="text-blue-600 hover:text-blue-900 mr-3 ${isArchived ? 'opacity-50 cursor-not-allowed' : ''}" ${isArchived ? 'disabled' : ''}>
+                    <i class="fas fa-edit mr-1"></i>
+                </button>
+                <button onclick="archiveClass('${classe.id_classe}')" class="${isArchived ? 'text-gray-600 hover:text-gray-900' : 'text-yellow-600 hover:text-yellow-900'}">
+                    <i class="fas ${isArchived ? 'fa-undo' : 'fa-archive'} mr-1"></i>
+                </button>
+            </td>
+        </tr>
+    `;
 }
 
 // Template pour quand il n'y a pas de classes
@@ -209,29 +276,87 @@ function resetFilters() {
     displayClasses(allClasses);
 }
 
-// Chargez les filières disponibles dynamiquement
-async function loadFiliereOptions() {
-    try {
-        const response = await fetch('http://localhost:3000/classe');
-        const classes = await response.json();
-        
-        const filieres = [...new Set(classes.map(c => c.filiere).filter(Boolean))];
-        const select = document.getElementById('filiereFilter');
-        
-        select.innerHTML = '<option value="all">Toutes les filières</option>';
-        
-        filieres.forEach(filiere => {
-            const option = document.createElement('option');
-            option.value = filiere;
-            option.textContent = filiere;
-            select.appendChild(option);
-        });
-    } catch (error) {
-        console.error('Erreur:', error);
-    }
+// Mettre à jour l'UI du filtre actif
+function updateActiveFilterButtons() {
+    document.querySelectorAll('.niveau-btn').forEach(btn => {
+        if (btn.dataset.niveau === currentFilters.niveau) {
+            btn.classList.add('bg-purple-600', 'text-white');
+            btn.classList.remove('bg-gray-200', 'text-gray-700');
+        } else {
+            btn.classList.remove('bg-purple-600', 'text-white');
+            btn.classList.add('bg-gray-200', 'text-gray-700');
+        }
+    });
 }
 
+// Fonction de validation du formulaire
+function validateClassForm() {
+    let isValid = true;
+    
+    // Validation libellé
+    const libelle = document.getElementById('libelle').value.trim();
+    if (!libelle) {
+        document.getElementById('libelleError').classList.remove('hidden');
+        isValid = false;
+    } else {
+        document.getElementById('libelleError').classList.add('hidden');
+    }
+    
+    // Validation filière
+    const filiere = document.getElementById('filiere').value.trim();
+    if (!filiere) {
+        document.getElementById('filiereError').classList.remove('hidden');
+        isValid = false;
+    } else {
+        document.getElementById('filiereError').classList.add('hidden');
+    }
+    
+    return isValid;
+}
 
+// Fonction pour configurer la validation en temps réel
+function setupRealTimeValidation() {
+    // Libellé
+    document.getElementById('libelle').addEventListener('input', function() {
+        if (this.value.trim()) {
+            document.getElementById('libelleError').classList.add('hidden');
+        }
+    });
+    
+    // Filière
+    document.getElementById('filiere').addEventListener('input', function() {
+        if (this.value.trim()) {
+            document.getElementById('filiereError').classList.add('hidden');
+        }
+    });
+}
+
+//fonction pour la vilidation des champs
+function validateEditClassForm() {
+    let isValid = true;
+    
+    // Validation libellé
+    const libelle = document.getElementById('editLibelle').value.trim();
+    if (!libelle) {
+        document.getElementById('editLibelleError').classList.remove('hidden');
+        isValid = false;
+    } else {
+        document.getElementById('editLibelleError').classList.add('hidden');
+    }
+    
+    // Validation filière
+    const filiere = document.getElementById('editFiliere').value.trim();
+    if (!filiere) {
+        document.getElementById('editFiliereError').classList.remove('hidden');
+        isValid = false;
+    } else {
+        document.getElementById('editFiliereError').classList.add('hidden');
+    }
+    
+    return isValid;
+}
+
+//fonction utilitaire qui configure la validation en temps réel pour le formulaire de modification d'une classe
 function setupEditRealTimeValidation() {
     // Libellé
     document.getElementById('editLibelle').addEventListener('input', function() {
@@ -332,40 +457,13 @@ document.getElementById('closeArchiveConfirmBtn').addEventListener('click', () =
 
 }
 
-
-// Mettre à jour l'UI du filtre actif
-function updateActiveFilterButtons() {
-    document.querySelectorAll('.niveau-btn').forEach(btn => {
-        if (btn.dataset.niveau === currentFilters.niveau) {
-            btn.classList.add('bg-purple-600', 'text-white');
-            btn.classList.remove('bg-gray-200', 'text-gray-700');
-        } else {
-            btn.classList.remove('bg-purple-600', 'text-white');
-            btn.classList.add('bg-gray-200', 'text-gray-700');
-        }
-    });
-}
-
-// Afficher une erreur
-function showError(message) {
-    const container = document.getElementById('classesContainer');
-    container.innerHTML = `
-        <div class="col-span-full py-16 text-center">
-            <div class="mx-auto w-28 h-28 rounded-full bg-red-100 flex items-center justify-center mb-6">
-                <i class="fas fa-exclamation-triangle text-4xl text-red-500"></i>
-            </div>
-            <h3 class="text-xl font-medium text-gray-700">Erreur</h3>
-            <p class="text-gray-500 mt-2">${message}</p>
-        </div>
-    `;
-}
-
 // Fonctions d'actions
 function viewStudents(classId) {
     console.log(`Voir étudiants de la classe ${classId}`);
     window.location.href = `?controler=classe&page=voirEtudiants&id_classe=${classId}`;
 }
 
+//fonction pour la modification d'une classe
 async function editClass(classId) {
     try {
         // Trouver la classe à modifier
@@ -392,30 +490,6 @@ async function editClass(classId) {
         console.error('Erreur:', error);
         showNotification('error', "Erreur lors de l'ouverture du formulaire de modification");
     }
-}
-
-function validateEditClassForm() {
-    let isValid = true;
-    
-    // Validation libellé
-    const libelle = document.getElementById('editLibelle').value.trim();
-    if (!libelle) {
-        document.getElementById('editLibelleError').classList.remove('hidden');
-        isValid = false;
-    } else {
-        document.getElementById('editLibelleError').classList.add('hidden');
-    }
-    
-    // Validation filière
-    const filiere = document.getElementById('editFiliere').value.trim();
-    if (!filiere) {
-        document.getElementById('editFiliereError').classList.remove('hidden');
-        isValid = false;
-    } else {
-        document.getElementById('editFiliereError').classList.add('hidden');
-    }
-    
-    return isValid;
 }
 
 //fonction pour sauvegarder les modifications d'une classe
@@ -488,8 +562,6 @@ async function archiveClass(classId) {
     
     document.getElementById('archiveConfirmModal').classList.remove('hidden');
 }
-
-
 
 //fonction pour confirmer l'archivage d'une classe
 async function confirmArchive() {
@@ -610,18 +682,18 @@ async function addNewClass() {
     }
 }
 
-// Fonction pour charger les classes
-async function loadClasses() {
-    try {
-        const response = await fetch('http://localhost:3000/classe');
-        if (!response.ok) throw new Error('Erreur de chargement');
-        
-        allClasses = await response.json();
-        displayClasses(allClasses);
-    } catch (error) {
-        console.error('Erreur:', error);
-        showError("Impossible de charger les classes");
-    }
+// Afficher une erreur
+function showError(message) {
+    const container = document.getElementById('classesContainer');
+    container.innerHTML = `
+        <div class="col-span-full py-16 text-center">
+            <div class="mx-auto w-28 h-28 rounded-full bg-red-100 flex items-center justify-center mb-6">
+                <i class="fas fa-exclamation-triangle text-4xl text-red-500"></i>
+            </div>
+            <h3 class="text-xl font-medium text-gray-700">Erreur</h3>
+            <p class="text-gray-500 mt-2">${message}</p>
+        </div>
+    `;
 }
 
 // Fonction pour afficher des notifications

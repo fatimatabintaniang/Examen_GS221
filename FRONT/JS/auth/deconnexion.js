@@ -1,4 +1,4 @@
-// Gestion de la déconnexion avec délégation d'événements
+// Gestion de la déconnexion
 document.addEventListener('click', function(e) {
     if (e.target && e.target.id === 'logoutBtn') {
         localStorage.removeItem('currentUser');

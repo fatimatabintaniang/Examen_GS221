@@ -34,6 +34,20 @@
       "date": "2025-04-16",
       "id_etudiant": "2",
       "id_cours": "2"
+    },
+    {
+      "id": "47de",
+      "id_absence": "6",
+      "date": "2025-05-06",
+      "id_etudiant": "4",
+      "id_cours": "2"
+    },
+    {
+      "id": "c6dd",
+      "id_absence": "7",
+      "date": "2025-05-06",
+      "id_etudiant": "3",
+      "id_cours": "4"
     }
   ],
   "classe": [
@@ -82,7 +96,7 @@
       "heure_fin": "10:00:00",
       "nombre_heures": "2",
       "semestre": "Semestre 2",
-      "id_professeur": "1",
+      "id_professeur": "4",
       "id_module": "1",
       "id": "b811"
     },
@@ -118,17 +132,6 @@
       "semestre": "semestre 1",
       "id_professeur": "3",
       "id_module": "1"
-    },
-    {
-      "id": "0fc4",
-      "id_cours": "5",
-      "date": "2025-04-18",
-      "heure_debut": "14:29:00",
-      "heure_fin": "15:29:00",
-      "nombre_heures": "1",
-      "semestre": "semestre 1",
-      "id_professeur": "2",
-      "id_module": "2"
     }
   ],
   "cours_classe": [
@@ -136,16 +139,6 @@
       "id": "3",
       "id_cours": "4",
       "id_classe": "2"
-    },
-    {
-      "id": "4",
-      "id_cours": "5",
-      "id_classe": "2"
-    },
-    {
-      "id": "5",
-      "id_cours": "1",
-      "id_classe": "1"
     },
     {
       "id": "6",
@@ -156,22 +149,53 @@
       "id": "10",
       "id_cours": "3",
       "id_classe": "1"
+    },
+    {
+      "id": "12",
+      "id_cours": "1",
+      "id_classe": "1"
+    },
+    {
+      "id": "13",
+      "id_cours": "1",
+      "id_classe": "4"
     }
   ],
   "etudiant": [
     {
       "id_etudiant": "1",
       "id_utilisateur": "4",
-      "matricule": "ETU001",
+      "matricule": "E221-0001",
       "adresse": "12 rue des Lilas",
       "id": "61f9"
     },
     {
       "id_etudiant": "2",
       "id_utilisateur": "7",
-      "matricule": "ETU002",
+      "matricule": "E221-0002",
       "adresse": "13 rue des Lilas",
       "id": "59ae"
+    },
+    {
+      "id": "3otcite",
+      "id_etudiant": "3",
+      "id_utilisateur": "11",
+      "matricule": "E221-0003",
+      "adresse": "Dakar"
+    },
+    {
+      "id": "1n7sv5c",
+      "id_etudiant": "4",
+      "id_utilisateur": "12",
+      "matricule": "E221-0004",
+      "adresse": "Guediawaye"
+    },
+    {
+      "id": "kbj6kbp",
+      "id_etudiant": "5",
+      "id_utilisateur": "13",
+      "matricule": "E221-0005",
+      "adresse": "sang@gmail.com"
     }
   ],
   "inscription": [
@@ -188,6 +212,27 @@
       "id_classe": "2",
       "annee_scolaire": "2025",
       "id": "5574"
+    },
+    {
+      "id": "vz878rh",
+      "id_inscription": "3",
+      "id_etudiant": "3",
+      "id_classe": "4",
+      "annee_scolaire": "2025"
+    },
+    {
+      "id": "qvg6q1k",
+      "id_inscription": "4",
+      "id_etudiant": "4",
+      "id_classe": "4",
+      "annee_scolaire": "2025"
+    },
+    {
+      "id": "p24i5ty",
+      "id_inscription": "5",
+      "id_etudiant": "5",
+      "id_classe": "3",
+      "annee_scolaire": "2023"
     }
   ],
   "justification": [
@@ -197,15 +242,22 @@
       "date": "2025-03-11",
       "motif": "Maladie",
       "etat": "acceptée",
-      "id": "b383"
+      "id": "1"
     },
     {
-     "id_justification": "2",
+      "id_justification": "2",
       "id_absence": "2",
       "date": "2025-04-16",
       "motif": "empechement",
-      "etat": "attente",
-      "id": "6523"
+      "etat": "refusée",
+      "id": "2"
+    },
+    {
+      "id": "cb8c",
+      "id_absence": "3",
+      "date": "2025-05-06",
+      "motif": "malade mental",
+      "etat": "en_attente"
     }
   ],
   "module": [
@@ -269,11 +321,6 @@
   ],
   "professeur_classe": [
     {
-      "id_professeur": "2",
-      "id_classe": "2",
-      "id": "67c0"
-    },
-    {
       "id": "b83c",
       "id_professeur": "3",
       "id_classe": "1"
@@ -289,9 +336,14 @@
       "id_classe": "2"
     },
     {
-      "id": "f98d",
+      "id": "35ea",
       "id_professeur": "1",
       "id_classe": "1"
+    },
+    {
+      "id": "830a",
+      "id_professeur": "2",
+      "id_classe": "2"
     }
   ],
   "utilisateur": [
@@ -334,7 +386,7 @@
     {
       "id_utilisateur": "5",
       "nom": "Fall",
-      "prenom": "David",
+      "prenom": "Davidddddd",
       "email": "david@ecole221.com",
       "mot_de_passe": "mdp123",
       "role": "Professeur",
@@ -384,6 +436,33 @@
       "email": "1234000@gmail.com",
       "role": "Professeur",
       "mot_de_passe": "wlxUyRF4"
+    },
+    {
+      "id": "psu444r",
+      "id_utilisateur": "11",
+      "nom": "Dieng",
+      "prenom": "Diarra",
+      "email": "1234000@gmail.com",
+      "mot_de_passe": "mdp123",
+      "role": "Étudiant"
+    },
+    {
+      "id": "f3u586b",
+      "id_utilisateur": "12",
+      "nom": "Diop",
+      "prenom": "Soukeyna",
+      "email": "soukeyyyya@gmail.com",
+      "mot_de_passe": "mdp123",
+      "role": "Étudiant"
+    },
+    {
+      "id": "mvjwnif",
+      "id_utilisateur": "13",
+      "nom": "SANGARE",
+      "prenom": "DOUKS",
+      "email": "sambaee@ecole221.com",
+      "mot_de_passe": "mdp123",
+      "role": "Étudiant"
     }
   ]
 }

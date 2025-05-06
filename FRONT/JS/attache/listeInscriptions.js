@@ -4,7 +4,6 @@ let appData = {
     etudiant: [],
     utilisateur: [],
     classe: [],
-
 };
 
 // Fonction pour générer un ID aléatoire
@@ -15,15 +14,20 @@ function generateId() {
 // Fonction pour générer un matricule étudiant
 function generateMatricule(etudiants) {
     const lastMatricule = etudiants.reduce((max, etudiant) => {
-        const num = parseInt(etudiant.matricule?.replace('ETU', '') || '0');
+        const studentData = etudiant.id_etudiant ? etudiant : (etudiant.etudiant || {});
+        const num = parseInt(studentData.matricule?.replace('E221-', '') || '0');
         return num > max ? num : max;
     }, 0);
-    return `ETU${String(lastMatricule + 1).padStart(3, '0')}`;
+    return `E221-${String(lastMatricule + 1).padStart(4, '0')}`;
+}
+
+// Fonction pour formater l'année scolaire (2025 -> 2025-2026)
+function formatAnneeScolaire(year) {
+    return `${year}-${parseInt(year) + 1}`;
 }
 
 // Charger les données initiales depuis le localStorage ou le fichier JSON
 async function loadInitialData() {
-    // Vérifier si des données existent dans le localStorage
     const savedData = localStorage.getItem('schoolManagementData');
     
     if (savedData) {
@@ -31,12 +35,10 @@ async function loadInitialData() {
         return appData;
     }
     
-    // Si aucune donnée dans le localStorage, charger depuis le fichier JSON
     try {
         const response = await fetch('../../../BACK/data.json');
         if (!response.ok) throw new Error('Erreur de chargement');
         appData = await response.json();
-        // Sauvegarder dans le localStorage pour la prochaine fois
         localStorage.setItem('schoolManagementData', JSON.stringify(appData));
         return appData;
     } catch (error) {
@@ -67,9 +69,10 @@ function prepareInscriptionsData() {
             ...inscription,
             etudiant: {
                 ...etudiant,
-                utilisateur
+                utilisateur: utilisateur
             },
-            classe
+            classe: classe,
+            annee_scolaire_formatted: formatAnneeScolaire(inscription.annee_scolaire)
         };
     });
 }
@@ -79,21 +82,17 @@ function renderClasses() {
     const filterSelect = document.getElementById('classe-filter');
     const modalSelect = document.getElementById('studentClasse');
     
-    // Réinitialiser les selects
     filterSelect.innerHTML = '<option value="">Toutes les classes</option>';
     modalSelect.innerHTML = '<option value="">Sélectionnez une classe</option>';
     
-    // Ajouter les classes
     appData.classe.forEach(classe => {
         const optionText = `${classe.libelle} (${classe.niveau})`;
         
-        // Pour le filtre
         const filterOption = document.createElement('option');
         filterOption.value = classe.id_classe;
         filterOption.textContent = optionText;
         filterSelect.appendChild(filterOption);
         
-        // Pour le modal
         const modalOption = document.createElement('option');
         modalOption.value = classe.id_classe;
         modalOption.textContent = optionText;
@@ -161,7 +160,7 @@ function renderInscriptions(inscriptions) {
 
             <div class="px-5 py-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
                 <span class="text-sm text-gray-500">
-                    Année: ${inscription.annee_scolaire || '2025'}
+                    Année: ${inscription.annee_scolaire_formatted || '2025-2026'}
                 </span>
                 <div class="flex space-x-2">
                     <button data-id="${inscription.id}" class="edit-btn px-3 py-1 rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors text-sm">
@@ -176,11 +175,20 @@ function renderInscriptions(inscriptions) {
     `).join('');
 }
 
-// Filtrer les inscriptions par classe
-function filterInscriptions(classId) {
+// Filtrer les inscriptions par classe et année
+function filterInscriptions(classId, year) {
     const fullInscriptions = prepareInscriptionsData();
-    if (!classId) return fullInscriptions;
-    return fullInscriptions.filter(ins => ins.id_classe === classId);
+    let filtered = fullInscriptions;
+    
+    if (classId) {
+        filtered = filtered.filter(ins => ins.id_classe === classId);
+    }
+    
+    if (year) {
+        filtered = filtered.filter(ins => ins.annee_scolaire === year);
+    }
+    
+    return filtered;
 }
 
 // Valider le formulaire
@@ -191,7 +199,9 @@ function validateForm() {
         { id: 'studentPrenom', errorId: 'studentPrenomError', message: 'Le prénom est obligatoire' },
         { id: 'studentEmail', errorId: 'studentEmailError', message: 'Email invalide', 
           validate: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) },
-        { id: 'studentClasse', errorId: 'studentClasseError', message: 'La classe est obligatoire' }
+          { id: 'studentAdresse', errorId: 'studentAdresseError', message: 'L\'adresse obligatoire'},
+        { id: 'studentClasse', errorId: 'studentClasseError', message: 'La classe est obligatoire' },
+        { id: 'studentAnnee', errorId: 'studentAnneeError', message: 'L\'année scolaire est obligatoire' }
     ];
 
     requiredFields.forEach(field => {
@@ -231,13 +241,13 @@ function closeModal() {
 }
 
 // Ajouter une nouvelle inscription
-function addInscription(formData) {
-    // Générer les nouveaux IDs
+async function addInscription(formData) {
     const newUserId = Math.max(0, ...appData.utilisateur.map(u => parseInt(u.id_utilisateur))) + 1;
     const newStudentId = Math.max(0, ...appData.etudiant.map(e => parseInt(e.id_etudiant))) + 1;
     const newInscriptionId = Math.max(0, ...appData.inscription.map(i => parseInt(i.id_inscription))) + 1;
 
-    // Créer les nouvelles entrées
+    const selectedYear = document.getElementById('annee-filter').value;
+    
     const newUser = {
         id_utilisateur: newUserId.toString(),
         nom: formData.nom,
@@ -260,54 +270,103 @@ function addInscription(formData) {
         id_inscription: newInscriptionId.toString(),
         id_etudiant: newStudentId.toString(),
         id_classe: formData.classe,
-        annee_scolaire: "2025",
+        annee_scolaire: formData.annee,
         id: generateId()
     };
 
-    // Mettre à jour les données
     appData.utilisateur.push(newUser);
     appData.etudiant.push(newStudent);
     appData.inscription.push(newInscription);
 
-    // Sauvegarder dans le localStorage
-    const saved = saveDataToLocalStorage();
-    
-    if (saved) {
-        // Mettre à jour l'affichage
-        renderInscriptions(filterInscriptions());
+    try {
+        const userResponse = await fetch('http://localhost:3000/utilisateur', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newUser)
+        });
+
+        if (!userResponse.ok) throw new Error('Erreur création utilisateur');
+
+        const studentResponse = await fetch('http://localhost:3000/etudiant', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newStudent)
+        });
+
+        if (!studentResponse.ok) throw new Error('Erreur création étudiant');
+
+        const inscriptionResponse = await fetch('http://localhost:3000/inscription', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newInscription)
+        });
+
+        if (!inscriptionResponse.ok) throw new Error('Erreur création inscription');
+
+        saveDataToLocalStorage();
+        renderInscriptions(filterInscriptions('', selectedYear));
         return true;
+    } catch (error) {
+        console.error("Erreur de sauvegarde:", error);
+        appData.utilisateur = appData.utilisateur.filter(u => u.id !== newUser.id);
+        appData.etudiant = appData.etudiant.filter(e => e.id !== newStudent.id);
+        appData.inscription = appData.inscription.filter(i => i.id !== newInscription.id);
+        return false;
     }
-    return false;
+}
+
+// Configurer les filtres
+function setupFilters() {
+    const classeFilter = document.getElementById('classe-filter');
+    const anneeFilter = document.getElementById('annee-filter');
+    
+    const applyFilters = () => {
+        const selectedClass = classeFilter.value;
+        const selectedYear = anneeFilter.value;
+        renderInscriptions(filterInscriptions(selectedClass, selectedYear));
+    };
+    
+    classeFilter.addEventListener('change', applyFilters);
+    anneeFilter.addEventListener('change', applyFilters);
 }
 
 // Initialisation de la page
 async function initPage() {
-    // Charger les données initiales
     await loadInitialData();
-    
-    // Initialiser l'affichage
     renderClasses();
-    renderInscriptions(prepareInscriptionsData());
     
-    // Gestion du filtre
-    document.getElementById('classe-filter').addEventListener('change', (e) => {
-        renderInscriptions(filterInscriptions(e.target.value));
-    });
+        // Définir l'année courante par défaut (2025)
+        const currentYear = '2025';
+        document.getElementById('annee-filter').value = currentYear;
+        document.getElementById('studentAnnee').value = currentYear;
+        
+        // Synchroniser les changements d'année entre les filtres
+        document.getElementById('annee-filter').addEventListener('change', function() {
+            document.getElementById('studentAnnee').value = this.value;
+        });
     
-    // Bouton "Nouveau"
+    // Afficher les inscriptions de l'année courante
+    renderInscriptions(filterInscriptions('', currentYear));
+    
+    setupFilters();
+    
     document.getElementById('add-new-btn').addEventListener('click', (e) => {
         e.preventDefault();
         openModal();
     });
     
-    // Annulation du modal
     document.getElementById('cancelAddInscription').addEventListener('click', (e) => {
         e.preventDefault();
         closeModal();
     });
     
-    // Soumission du formulaire
-    document.getElementById('addInscriptionForm').addEventListener('submit', (e) => {
+    document.getElementById('addInscriptionForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         
         if (!validateForm()) return;
@@ -317,20 +376,24 @@ async function initPage() {
             prenom: document.getElementById('studentPrenom').value.trim(),
             email: document.getElementById('studentEmail').value.trim(),
             adresse: document.getElementById('studentAdresse').value.trim(),
-            classe: document.getElementById('studentClasse').value
+            classe: document.getElementById('studentClasse').value,
+            annee: document.getElementById('studentAnnee').value
         };
 
-        const success = addInscription(formData);
+        const success = await addInscription(formData);
         
         if (success) {
             closeModal();
+            // Recharger les inscriptions avec le filtre actuel
+            const selectedClass = document.getElementById('classe-filter').value;
+            const selectedYear = document.getElementById('annee-filter').value;
+            renderInscriptions(filterInscriptions(selectedClass, selectedYear));
             alert("Inscription ajoutée avec succès!");
         } else {
             alert("Erreur lors de l'ajout");
         }
     });
     
-    // Boutons Modifier/Annuler
     document.addEventListener('click', (e) => {
         if (e.target.closest('.edit-btn')) {
             e.preventDefault();
