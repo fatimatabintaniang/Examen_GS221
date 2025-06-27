@@ -8,7 +8,8 @@ let db = {
     cours_classe: []
 };
 
-let currentViewMode = 'cards'; // 'cards' ou 'list'
+let currentViewMode = 'list';
+let showDeleted = false;
 
 // Fonction principale pour charger les données
 async function loadData() {
@@ -32,7 +33,7 @@ async function loadData() {
             classe: classes,
             cours_classe: coursClasses
         };
-
+         db.cours = db.cours.filter(c => c.deleted !== true);
         // Ajouter les classes aux cours pour faciliter l'affichage
         db.cours.forEach(c => {
             c.classes = db.cours_classe
@@ -109,7 +110,18 @@ function toggleViewMode() {
     currentViewMode = currentViewMode === 'cards' ? 'list' : 'cards';
     const icon = document.getElementById('viewIcon');
     icon.className = currentViewMode === 'cards' ? 'fas fa-th-list' : 'fas fa-th-large';
-    displayCourses(db.cours); // Réafficher les cours avec le nouveau mode
+    displayCourses(db.cours); 
+}
+
+function toggleDeletedView() {
+    showDeleted = !showDeleted;
+    const btn = document.getElementById('viewDeletedBtn');
+    const restoreAllBtn = document.getElementById('restoreAllBtn');
+    
+    btn.textContent = showDeleted ? 'Voir les cours actifs' : 'Voir les cours annulés';
+    restoreAllBtn.classList.toggle('hidden', !showDeleted);
+    
+    loadData();
 }
 
 // Afficher les cours
@@ -278,6 +290,31 @@ function filterCourses() {
     displayCourses(filteredCourses);
 }
 
+async function restoreAllCourses() { 
+    
+    try {  
+        // Récupérer tous les cours supprimés
+        const deletedCourses = await fetch('http://localhost:3000/cours?deleted=true')
+            .then(handleResponse);
+
+        // Restaurer chaque cours
+        await Promise.all(deletedCourses.map(async course => {  
+            await fetch(`http://localhost:3000/cours/${course.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ deleted: false })
+            });
+        }));
+
+        // Recharger les données
+        await loadData();
+        showSuccessMessage(`${deletedCourses.length} cours restaurés avec succès`);
+        
+    } catch (error) {
+        console.error("Erreur:", error);
+        showError(`Échec de la restauration: ${error.message}`);
+    }  
+}  
 // Charger les professeurs dans le filtre
 function loadProfessors() {
     const select = document.getElementById('professeur_filtre');
@@ -738,18 +775,11 @@ async function confirmCancelCourse() {
       throw new Error('Cours introuvable');
     }
 
-    // 1. Supprimer les relations cours_classe
-    const relationsToDelete = db.cours_classe.filter(cc => cc.id_cours === courseId);
-    await Promise.all(relationsToDelete.map(async relation => {
-      const response = await fetch(`http://localhost:3000/cours_classe/${relation.id}`, {
-        method: 'DELETE'
-      });
-      if (!response.ok) throw new Error('Échec de la suppression des relations');
-    }));
-
-    // 2. Supprimer le cours
+    // Mettre à jour le cours avec deleted: true
     const response = await fetch(`http://localhost:3000/cours/${course.id}`, {
-      method: 'DELETE'
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deleted: true })
     });
 
     if (!response.ok) throw new Error('Échec de la suppression du cours');
@@ -796,4 +826,5 @@ document.addEventListener('DOMContentLoaded', () => {
           closeViewClassesModal();
         }
     });
+     document.getElementById('restoreAllBtn').addEventListener('click', restoreAllCourses);
 });

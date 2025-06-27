@@ -48,6 +48,13 @@
       "date": "2025-05-06",
       "id_etudiant": "3",
       "id_cours": "4"
+    },
+    {
+      "id": "2d77",
+      "id_absence": "8",
+      "date": "2025-06-14",
+      "id_etudiant": "NaN",
+      "id_cours": "2"
     }
   ],
   "classe": [
@@ -63,7 +70,8 @@
       "libelle": "L1 Marketing",
       "filiere": "Marketing",
       "niveau": "Licence 1",
-      "id": "8afd"
+      "id": "8afd",
+      "archive": false
     },
     {
       "id": "fce8",
@@ -98,7 +106,8 @@
       "semestre": "Semestre 2",
       "id_professeur": "4",
       "id_module": "1",
-      "id": "b811"
+      "id": "b811",
+      "deleted": false
     },
     {
       "id_cours": "2",
@@ -109,7 +118,8 @@
       "semestre": "Semestre 1",
       "id_professeur": "1",
       "id_module": "2",
-      "id": "91c6"
+      "id": "91c6",
+      "deleted": false
     },
     {
       "id_cours": "3",
@@ -120,7 +130,8 @@
       "semestre": "Semestre 2",
       "id_professeur": "2",
       "id_module": "3",
-      "id": "7ef8"
+      "id": "7ef8",
+      "deleted": false
     },
     {
       "id": "0b7e",
@@ -131,7 +142,8 @@
       "nombre_heures": "1",
       "semestre": "semestre 1",
       "id_professeur": "3",
-      "id_module": "1"
+      "id_module": "1",
+      "deleted": false
     }
   ],
   "cours_classe": [
@@ -196,6 +208,13 @@
       "id_utilisateur": "13",
       "matricule": "E221-0005",
       "adresse": "sang@gmail.com"
+    },
+    {
+      "id": "4o9p44o",
+      "id_etudiant": "6",
+      "id_utilisateur": "14",
+      "matricule": "E221-0006",
+      "adresse": "Castor"
     }
   ],
   "inscription": [
@@ -233,6 +252,13 @@
       "id_etudiant": "5",
       "id_classe": "3",
       "annee_scolaire": "2023"
+    },
+    {
+      "id": "vjb2o6i",
+      "id_inscription": "6",
+      "id_etudiant": "6",
+      "id_classe": "5",
+      "annee_scolaire": "2025"
     }
   ],
   "justification": [
@@ -316,7 +342,7 @@
       "id_utilisateur": "10",
       "specialite": "informatique",
       "grade": "grade 2",
-      "archive": true
+      "archive": false
     }
   ],
   "professeur_classe": [
@@ -362,7 +388,7 @@
       "prenom": "Attache",
       "email": "attache@ecole221.com",
       "mot_de_passe": "att@123",
-      "role": "RP",
+      "role": "Attaché",
       "id": "41d1"
     },
     {
@@ -461,6 +487,15 @@
       "nom": "SANGARE",
       "prenom": "DOUKS",
       "email": "sambaee@ecole221.com",
+      "mot_de_passe": "mdp123",
+      "role": "Étudiant"
+    },
+    {
+      "id": "1q6zs5d",
+      "id_utilisateur": "14",
+      "nom": "yade",
+      "prenom": "aminata",
+      "email": "mina@gmail.com",
       "mot_de_passe": "mdp123",
       "role": "Étudiant"
     }

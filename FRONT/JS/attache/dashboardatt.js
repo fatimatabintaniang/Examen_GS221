@@ -18,7 +18,7 @@ async function loadData() {
 async function displayStats() {
     const data = await loadData();
     if (data) {
-        // Afficher le nom de l'utilisateur (simulé)
+        // Afficher le nom de l'utilisateur 
         const user = data.utilisateur.find(u => u.role === "Attaché");
         if (user) {
             document.getElementById('user-name').textContent = user.prenom;

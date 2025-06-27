@@ -171,7 +171,7 @@ async function handleJustificationAction(action, justificationId) {
     }
 }
 
-// Initialisation de la page
+// Initialisation de la page  
 async function initPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const currentFilter = urlParams.get('filter') || '';

@@ -21,45 +21,7 @@
             }
         }
     </script>
-    <style>
-        .animate-float {
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-
-        /* Animation pour le modal */
-        @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        #cancelConfirmModal[data-show="true"] {
-            display: flex;
-            animation: modalFadeIn 0.3s ease-out;
-        }
-
-        #cancelConfirmModal .modal-content {
-            animation: modalFadeIn 0.3s ease-out;
-        }
-    </style>
+   
 </head>
 
 <body class="bg-gray-100">
@@ -383,7 +345,9 @@
                                         class="bg-purple-600 text-white px-4 py-2 rounded bg-gradient-to-r from-primary to-accent">
                                         Nouveau
                                     </button>
-
+<button id="restoreAllBtn" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 ">
+    <i class="fas fa-undo mr-2"></i> Restaurer tous
+</button>
                                     <div class="flex items-center space-x-2">
                                         <button id="toggleViewBtn" class="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">
                                             <i id="viewIcon" class="fas fa-th-list"></i>
