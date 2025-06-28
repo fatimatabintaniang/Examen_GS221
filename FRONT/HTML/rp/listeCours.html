@@ -8,6 +8,43 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- FullCalendar CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <style>
+        .fc-event {
+            border: none;
+            border-left: 4px solid;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin: 2px 4px;
+            cursor: pointer;
+        }
+
+        .fc-event:hover {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        }
+
+        .fc-daygrid-event {
+            margin: 1px 3px;
+        }
+
+        .fc-timegrid-event {
+            margin: 1px 2px;
+        }
+
+        .fc-event-content {
+            padding: 2px 4px;
+        }
+
+        .fc-event-time {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .fc-day-today {
+            background-color: rgba(124, 58, 237, 0.05) !important;
+        }
+    </style>
     <script>
         tailwind.config = {
             theme: {
@@ -21,7 +58,6 @@
             }
         }
     </script>
-   
 </head>
 
 <body class="bg-gray-100">
@@ -30,7 +66,6 @@
 
         <div class="flex-1">
             <div id="navbar"></div>
-
 
             <!-- Modal d'ajout de cours -->
             <div id="addCourseModal"
@@ -138,9 +173,10 @@
                 </div>
             </div>
 
-            <!--  modal de modification -->
+            <!-- Modal de modification -->
             <div id="editCourseModal"
                 class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+
                 <div class="bg-white rounded-lg p-6 w-[50%]">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-xl font-bold text-primary">Modifier le Cours</h3>
@@ -235,11 +271,13 @@
                         </div>
                     </form>
                 </div>
+
             </div>
 
             <!-- Modal de confirmation d'annulation -->
             <div id="cancelConfirmModal"
                 class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
+
                 <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl transform transition-all">
                     <div class="text-center">
                         <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
@@ -263,15 +301,14 @@
                         </button>
                     </div>
                 </div>
-            </div>
 
+            </div>
 
             <!-- Modal pour afficher les classes -->
             <div id="viewClassesModal"
                 class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black bg-opacity-50">
                 <div class="bg-white rounded-xl shadow-xl w-[50%] max-w-4xl max-h-[90vh] overflow-y-auto">
-                    <!-- En-tête -->
-                    <div class="sticky top-0 bg-white p-6  flex justify-between items-start">
+                    <div class="sticky top-0 bg-white p-6 flex justify-between items-start">
                         <div>
                             <h3 id="viewClassesModalTitle" class="text-xl font-bold text-gray-800"></h3>
                             <p id="viewClassesModalSubtitle" class="text-sm text-gray-500 mt-1"></p>
@@ -281,13 +318,10 @@
                         </button>
                     </div>
 
-                    <!-- Contenu - Cartes des classes -->
                     <div id="classesCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
-                        <!-- Les cartes seront générées ici dynamiquement -->
                     </div>
 
-                    <!-- Pied de page -->
-                    <div class="sticky bottom-0 bg-white p-4  flex justify-end">
+                    <div class="sticky bottom-0 bg-white p-4 flex justify-end">
                         <button onclick="closeViewClassesModal()"
                             class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors">
                             Fermer
@@ -297,34 +331,30 @@
             </div>
 
             <!-- Main Content -->
-            <main class="flex-1 space-y-8 p-6  ">
-                <!-- Contenu Principal -->
-                <div class="flex-1 p-6 md:p-8 rounded-2xl bg-white shadow-xl overflow-y-auto h-[80vh] ">
-
-                    <!-- En-tête avec titre et boutons-->
+            <main class="flex-1 space-y-8 p-6">
+                <div class="flex-1 p-6 md:p-8 rounded-2xl bg-white shadow-xl overflow-y-auto h-[80vh]">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                         <div>
                             <h2
                                 class="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                                Liste des Cours</h2>
-                            <p class="text-gray-500 mt-1">Liste des cours</p>
+                                Gestion des Cours</h2>
+                            <p class="text-gray-500 mt-1">Visualisation et gestion des cours</p>
                         </div>
 
                         <div class="flex space-x-3">
-                            <!-- Barre de recherche et bouton -->
                             <div class="flex justify-between items-center mb-4">
                                 <div class="space-x-3 flex">
                                     <div class="relative group">
                                         <button
-                                            class="text-black shadow px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 transition-colors">filtrer</button>
-                                        <!-- Menu déroulant -->
+                                            class="text-black shadow px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 transition-colors">
+                                            <i class="fas fa-filter mr-2"></i>Filtrer
+                                        </button>
                                         <div
-                                            class="hidden group-hover:block absolute bg-white shadow-md rounded p-2 right-0 z-10 border border-gray-100">
+                                            class="hidden group-hover:block absolute bg-white shadow-md rounded p-2 right-0 z-10 border border-gray-100 w-64">
                                             <form id="filterForm" class="space-y-3 mb-4">
                                                 <select id="professeur_filtre" name="professeur_filtre"
-                                                    class="border p-2 rounded">
+                                                    class="border p-2 rounded w-full">
                                                     <option value="">-- Tous les professeurs --</option>
-                                                    <!-- Les options seront ajoutées dynamiquement ici -->
                                                 </select>
 
                                                 <div class="grid grid-cols-2 gap-3">
@@ -334,45 +364,68 @@
                                                         class="border p-2 rounded">
                                                 </div>
                                                 <button type="button" id="applyFilter"
-                                                    class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                                                    Filtrer
+                                                    class="bg-primary text-white px-4 py-2 rounded hover:bg-purple-700 w-full">
+                                                    Appliquer
                                                 </button>
                                             </form>
                                         </div>
                                     </div>
 
                                     <button id="addCourseBtn"
-                                        class="bg-purple-600 text-white px-4 py-2 rounded bg-gradient-to-r from-primary to-accent">
-                                        Nouveau
+                                        class="bg-primary text-white px-4 py-2 rounded hover:bg-purple-700">
+                                        <i class="fas fa-plus mr-2"></i>Nouveau cours
                                     </button>
-<button id="restoreAllBtn" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 ">
-    <i class="fas fa-undo mr-2"></i> Restaurer tous
-</button>
-                                    <div class="flex items-center space-x-2">
-                                        <button id="toggleViewBtn" class="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">
-                                            <i id="viewIcon" class="fas fa-th-list"></i>
-                                        </button>
-                                    </div>
+                                    <button id="restoreAllBtn" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 ">
+                                        <i class="fas fa-undo mr-2"></i> Restaurer
+                                    </button>
+                                    <button id="toggleViewBtn"
+                                        class="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">
+                                        <i id="viewIcon" class="fas fa-calendar-alt"></i>
+                                    </button>
+                                    <button id="viewDeletedBtn"
+                                        class="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 hidden">
+                                        <i class="fas fa-trash-restore"></i>
+                                    </button>
+
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Liste des cours en cartes -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 gap-6" id="coursesContainer">
-                        <!-- Les cours seront ajoutés dynamiquement par JavaScript -->
+                    <!-- Navigation calendrier -->
+                    <div class="flex justify-between items-center mb-4" id="calendarHeader">
+                        <button id="prevBtn" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h3 id="calendarTitle" class="text-lg font-semibold text-gray-700"></h3>
+                        <div class="flex space-x-2">
+                            <button id="todayBtn" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded">
+                                Aujourd'hui
+                            </button>
+                            <button id="nextBtn" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
                     </div>
 
+                    <!-- Conteneur du calendrier -->
+                    <div id="calendar" class="bg-white rounded-xl"></div>
+
+                    <!-- Conteneur pour la vue liste/cartes -->
+                    <div id="coursesContainer" class="hidden"></div>
                 </div>
             </main>
         </div>
     </div>
 
+    <!-- FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/fr.min.js'></script>
+
     <script src="../composant/sidebar/sidebar.js"></script>
     <script src="../composant/navbar/navbar.js"></script>
     <script src="../../JS/auth/deconnexion.js"></script>
     <script src="../../JS/rp/listeCours.js"></script>
-
 </body>
 
 </html>

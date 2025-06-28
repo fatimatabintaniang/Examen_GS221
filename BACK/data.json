@@ -99,7 +99,7 @@
   "cours": [
     {
       "id_cours": "1",
-      "date": "2025-05-10",
+      "date": "2025-06-23",
       "heure_debut": "08:00:00",
       "heure_fin": "10:00:00",
       "nombre_heures": "2",
@@ -111,9 +111,9 @@
     },
     {
       "id_cours": "2",
-      "date": "2025-06-11",
+      "date": "2025-06-24",
       "heure_debut": "10:00:00",
-      "heure_fin": "20:00:00",
+      "heure_fin": "11:30:00",
       "nombre_heures": "2",
       "semestre": "Semestre 1",
       "id_professeur": "1",
@@ -123,7 +123,7 @@
     },
     {
       "id_cours": "3",
-      "date": "2025-08-12",
+      "date": "2025-06-25",
       "heure_debut": "14:00:00",
       "heure_fin": "16:00:00",
       "nombre_heures": "2",
@@ -136,8 +136,8 @@
     {
       "id": "0b7e",
       "id_cours": "4",
-      "date": "2025-04-18",
-      "heure_debut": "17:02:00",
+      "date": "2025-06-26",
+      "heure_debut": "15:02:00",
       "heure_fin": "18:02:00",
       "nombre_heures": "1",
       "semestre": "semestre 1",
@@ -342,7 +342,7 @@
       "id_utilisateur": "10",
       "specialite": "informatique",
       "grade": "grade 2",
-      "archive": false
+      "archive": true
     }
   ],
   "professeur_classe": [
